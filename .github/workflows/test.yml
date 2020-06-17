@@ -19,4 +19,6 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
 
       - name: Run Tests
-        run: yarn test
+        run: |
+          yarn
+          yarn test
