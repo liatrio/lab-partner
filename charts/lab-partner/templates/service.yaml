@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: lab-partner
+  labels:
+    {{- include "lab-partner.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "lab-partner.selectorLabels" . | nindent 4 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb
+  labels:
+    {{- include "lab-partner.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.mongodbService.type }}
+  ports:
+    - port: {{ .Values.mongodbService.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "lab-partner.selectorLabels" . | nindent 4 }}
