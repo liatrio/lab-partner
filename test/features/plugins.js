@@ -3,7 +3,7 @@ const sinon = require("sinon");
 
 const path = require("path");
 
-const plugins = require("../../features/plugins");
+const plugins = require("../../features/01-plugins");
 const pluginOne = require("../data/plugins/one");
 const pluginTwo = require("../data/plugins/two");
 

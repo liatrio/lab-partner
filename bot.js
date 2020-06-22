@@ -16,6 +16,7 @@ const {
 } = require("botbuilder-adapter-slack");
 
 const { MongoDbStorage } = require("botbuilder-storage-mongodb");
+const path = require("path");
 
 // Load process.env values from .env file
 require("dotenv").config();
@@ -63,8 +64,13 @@ const controller = new Botkit({
 
 // Once the bot has booted up its internal services, you can use them to do stuff.
 controller.ready(() => {
-    // load traditional developer-created local custom feature modules
-    controller.loadModules(__dirname + "/features");
+    // load built in feature
+    controller.loadModules(path.join(__dirname, "features"));
+
+    // load Script features
+    controller.loadModules(
+        path.join(__dirname, process.env.SCRIPT | "sample-script")
+    );
 });
 
 controller.webserver.get("/", (req, res) => {

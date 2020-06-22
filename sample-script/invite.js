@@ -15,10 +15,10 @@ module.exports = function (controller) {
                     text: {
                         type: "mrkdwn",
                         text: `Howdy :face_with_cowboy_hat: Thanks for the invite <@${message.inviter}>`,
-                    }
+                    },
                 },
                 ...helpMessage.blocks,
-            ]
+            ],
         });
     });
 };

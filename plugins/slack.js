@@ -14,11 +14,7 @@ module.exports = (botkit) => {
                 // const id = await botkit.adapter.getBotUserByTeam({ conversation: { team: process.env.TEAM } });
                 const bot = await botkit.spawn(process.env.TEAM);
                 const auth = await bot.api.auth.test();
-                if (auth.ok) {
-                    userInfo = await slack.getUserInfo(auth.user_id);
-                } else {
-                    throw new Error(`Slack auth error: ${error}`);
-                }
+                userInfo = await slack.getUserInfo(auth.user_id);
             }
             return userInfo;
         },
