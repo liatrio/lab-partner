@@ -17,6 +17,7 @@ const {
 
 const { MongoDbStorage } = require("botbuilder-storage-mongodb");
 const path = require("path");
+const fs = require("fs");
 
 // Load process.env values from .env file
 require("dotenv").config();
@@ -65,7 +66,7 @@ const controller = new Botkit({
 // Once the bot has booted up its internal services, you can use them to do stuff.
 controller.ready(() => {
     // load plugins
-    const pluginsPath = path.join(__dirname, "..", "plugins");
+    const pluginsPath = path.join(__dirname, "plugins");
     let files;
     try {
         files = fs.readdirSync(pluginsPath);
@@ -83,7 +84,7 @@ controller.ready(() => {
 
     // load Script features
     controller.loadModules(
-        path.join(__dirname, process.env.SCRIPT | "sample-script")
+        path.join(__dirname, process.env.SCRIPT || "sample-script")
     );
 });
 
