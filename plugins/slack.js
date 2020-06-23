@@ -11,10 +11,10 @@ module.exports = (botkit) => {
         whoAmI: async () => {
             let userInfo = userInfoCache.get(0);
             if (userInfo === undefined) {
-                // const id = await botkit.adapter.getBotUserByTeam({ conversation: { team: process.env.TEAM } });
                 const bot = await botkit.spawn(process.env.TEAM);
                 const auth = await bot.api.auth.test();
                 userInfo = await slack.getUserInfo(auth.user_id);
+                userInfoCache.set(0, userInfo);
             }
             return userInfo;
         },
