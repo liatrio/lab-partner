@@ -65,10 +65,8 @@ describe("plugins / slack", () => {
                 error: "that didn't work",
             });
 
-            await slackPlugin.getUserInfo(userId);
-
-            assert.throws(() => {
-                slackPlugin.getUserInfo(userId);
+            assert.rejects(async () => {
+                await slackPlugin.getUserInfo(userId);
             });
         });
     });

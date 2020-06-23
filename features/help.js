@@ -10,7 +10,7 @@ module.exports = async (controller) => {
     );
 
     controller.hears(
-        "help",
+        ["help"],
         ["message", "direct_message", "direct_mention", "mention"],
         async (bot, message) => {
             const helpMessage = controller.plugins.help.getMessage();
