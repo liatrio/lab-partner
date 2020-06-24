@@ -12,6 +12,7 @@ COPY test ./test
 COPY *.js ./
 COPY features ./features
 COPY plugins ./plugins
+COPY sample-script ./sample-script
 
 # run tests
 RUN yarn test
