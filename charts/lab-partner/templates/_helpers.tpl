@@ -2,7 +2,7 @@
 {{/*
 Expand the name of the chart.
 */}}
-{{- define "aws-event-mapper.name" -}}
+{{- define "lab-partner.name" -}}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
@@ -11,7 +11,7 @@ Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
 */}}
-{{- define "aws-event-mapper.fullname" -}}
+{{- define "lab-partner.fullname" -}}
 {{- if .Values.fullnameOverride -}}
 {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" -}}
 {{- else -}}
@@ -27,20 +27,37 @@ If release name contains chart name it will be used as a full name.
 {{/*
 Create chart name and version as used by the chart label.
 */}}
-{{- define "aws-event-mapper.chart" -}}
+{{- define "lab-partner.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
 {{/*
 Common labels
 */}}
-{{- define "aws-event-mapper.labels" -}}
-app.kubernetes.io/name: {{ include "aws-event-mapper.name" . }}
-helm.sh/chart: {{ include "aws-event-mapper.chart" . }}
-app.kubernetes.io/instance: {{ .Release.Name }}
+{{- define "lab-partner.labels" -}}
+helm.sh/chart: {{ include "lab-partner.chart" . }}
+{{ include "lab-partner.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end -}}
 
+{{/*
+Selector labels
+*/}}
+{{- define "lab-partner.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "lab-partner.name" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end -}}
+
+{{/*
+Create the name of the service account to use
+*/}}
+{{- define "lab-partner.serviceAccountName" -}}
+{{- if .Values.serviceAccount.create -}}
+    {{ default (include "lab-partner.fullname" .) .Values.serviceAccount.name }}
+{{- else -}}
+    {{ default "default" .Values.serviceAccount.name }}
+{{- end -}}
+{{- end -}}

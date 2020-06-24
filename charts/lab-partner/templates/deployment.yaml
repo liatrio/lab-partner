@@ -16,6 +16,7 @@ spec:
       labels:
         app.kubernetes.io/name: {{ include "lab-partner.name" . }}
         app.kuberentes.io/instance: {{ .Release.Name }}
+        {{- include "lab-partner.selectorLabels" . | nindent 8 }}
     spec:
     {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -28,12 +29,30 @@ spec:
         - name: lab-partner
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          image: {{ .Values.image.name }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
-              containerPort: {{ .Values.image.port }}
+              containerPort: {{ .Values.service.port }}
               protocol: TCP
+          env:
+            - name: MONGO_URI
+              value: {{ .Values.mongodb.service.name }}
+            - name: CLIENT_SIGNING_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: lab-partner
+                  key: slackSigningSecret
+            - name: BOT_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: lab-partner
+                  key: slackBotUserOauthAccessToken
+            - name: TEAM
+              valueFrom:
+                secretKeyRef:
+                  name: lab-partner
+                  key: teamId
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}

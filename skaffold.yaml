@@ -1,20 +1,19 @@
-apiVersion: skaffold/v1beta13
+apiVersion: skaffold/v1
 kind: Config
 build:
   artifacts:
     - image: lab-partner
+      context: ./
+  local: {}
 
 deploy:
   helm:
     releases:
       - name: lab-partner
         chartPath: charts/lab-partner
-        skipBuildDependencies: true
         wait: true
         values:
-          image: lab-partner
-        imageStrategy:
-          helm: {}
+          image.name: lab-partner
 
 portForward:
   - resourceType: service
