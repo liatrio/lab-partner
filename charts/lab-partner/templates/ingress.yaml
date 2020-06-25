@@ -11,11 +11,15 @@ metadata:
   {{- end }}
 spec:
   rules:
-    - host: {{ .Values.ingress.host }}
+    {{- range .Values.ingress.hosts }}
+    - host: {{ .host | quote }}
       http:
         paths:
-          - path: {{ .Values.ingress.path }}
+        {{- range .paths }}
+          - path: {{ . }}
             backend:
               serviceName: lab-partner
               servicePort: {{ .Values.service.port }}
+        {{- end }}
+  {{- end }}
 {{- end }}
