@@ -10,7 +10,12 @@ metadata:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
-  backend:
-    serviceName: lab-partner
-    servicePort: {{ .Values.service.port }}
+  rules:
+    - host: {{ .Values.ingress.host }}
+      http:
+        paths:
+          - path: {{ .Values.ingress.path }}
+            backend:
+              serviceName: lab-partner
+              servicePort: {{ .Values.service.port }}
 {{- end }}
