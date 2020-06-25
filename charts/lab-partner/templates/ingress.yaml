@@ -11,8 +11,7 @@ metadata:
   {{- end }}
 spec:
   rules:
-    {{- range .Values.ingress.hosts }}
-    - host: {{ .host | quote }}
+    - host: {{ .Values.ingress.host }}
       http:
         paths:
         {{- range .paths }}
@@ -21,5 +20,4 @@ spec:
               serviceName: lab-partner
               servicePort: {{ .Values.service.port }}
         {{- end }}
-  {{- end }}
 {{- end }}
