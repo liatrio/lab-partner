@@ -14,10 +14,8 @@ spec:
     - host: {{ .Values.ingress.host }}
       http:
         paths:
-        {{- range .paths }}
-          - path: {{ . }}
+          - path: {{ .Values.ingress.path }}
             backend:
               serviceName: lab-partner
               servicePort: {{ .Values.service.port }}
-        {{- end }}
 {{- end }}

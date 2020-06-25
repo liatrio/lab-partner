@@ -20,9 +20,10 @@ Slack bot for interactive automated workshop support
     If you're deploying to kubernetes this application has a helm chart which includes a secret named `lab-partner`. You'll need to set the three following strings in the values.yaml for this secret to be populated.
 
 ```
-slackSigningSecret: ""
-slackBotUserOauthAccessToken: ""
-teamId: ""
+secrets:
+  slackSigningSecret: ""
+  slackBotUserOauthAccessToken: ""
+  teamId: ""
 ```
 
 ## Scripts

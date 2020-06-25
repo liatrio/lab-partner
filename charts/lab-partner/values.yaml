@@ -38,6 +38,7 @@ ingress:
   enabled: true
   annotations: {}
   host:
+  path: 
   tls: []
   
 resources: {}
