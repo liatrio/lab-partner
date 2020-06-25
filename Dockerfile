@@ -23,7 +23,6 @@ COPY package.json ./
 COPY yarn.lock ./
 RUN yarn --prod
 
-COPY .eslintrc.json ./
 COPY *.js ./
 COPY features ./features
 COPY plugins ./plugins
