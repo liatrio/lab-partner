@@ -16,6 +16,16 @@ Slack bot for interactive automated workshop support
 
 - **SCRIPT**: Relative path to _Script_ folder.
 
+### Kubernetes Secret Configuration
+    If you're deploying to kubernetes this application has a helm chart which includes a secret named `lab-partner`. You'll need to set the three following strings in the values.yaml for this secret to be populated.
+
+```
+secrets:
+  slackSigningSecret: ""
+  slackBotUserOauthAccessToken: ""
+  teamId: ""
+```
+
 ## Scripts
 
 _Scripts_ represent the customized functionality for a specific workshop or lab. They tell the bot how to respond to user input or other events, how to track participant progress, etc. A _Script_ is simply a folder with BotKit features. Each feature is a JavaScript modules which return a function which takes the BotKit controller as an argument.

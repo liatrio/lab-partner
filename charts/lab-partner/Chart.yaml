@@ -1,0 +1,11 @@
+apiVersion: v2
+name: lab-partner
+description: A Helm chart for the Lab Partner slack bot
+type: application
+version: 0.1.0
+appVersion: 0.1.0
+dependencies:
+  - name: mongodb
+    version: 7.14.8
+    repository: https://charts.bitnami.com/bitnami
+    enabled: true
