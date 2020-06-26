@@ -37,8 +37,7 @@ service:
 ingress:
   enabled: true
   annotations: {}
-  host: localhost
-  path: /api/messages
+  path: /
   tls: []
   
 resources: {}

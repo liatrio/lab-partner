@@ -12,8 +12,11 @@ deploy:
       - name: lab-partner
         chartPath: charts/lab-partner
         wait: true
-        setValueTemplates:
+        values:
           image.name: lab-partner
+        setValues:
+          ingress.host: localhost
+        setValueTemplates:
           secrets.slackSigningSecret: "{{ .SLACK_SIGNING_SECRET }}"
           secrets.slackBotUserOauthAccessToken: "{{ .SLACK_BOT_USER_OAUTH_ACCESS_TOKEN }}"
           secrets.teamId: "{{ .TEAM_ID }}"
