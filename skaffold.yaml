@@ -14,8 +14,6 @@ deploy:
         wait: true
         values:
           image.name: lab-partner
-        setValues:
-          ingress.host: localhost
         setValueTemplates:
           secrets.slackSigningSecret: "{{ .SLACK_SIGNING_SECRET }}"
           secrets.slackBotUserOauthAccessToken: "{{ .SLACK_BOT_USER_OAUTH_ACCESS_TOKEN }}"
@@ -25,3 +23,14 @@ portForward:
   - resourceType: service
     resourceName: lab-partner
     port: 3000
+
+profiles:
+  - name: local
+    activation:
+      - kubeContext: docker-for-desktop
+      - kubeContext: docker-desktop
+    patches:
+      - op: add
+        path: /deploy/helm/releases/0/setValues/ingress.host
+        value: localhost
+
