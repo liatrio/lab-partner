@@ -14,8 +14,6 @@ deploy:
         wait: true
         values:
           image.name: lab-partner
-        setValues: 
-          ingress.host: ""
         setValueTemplates:
           secrets.slackSigningSecret: "{{ .SLACK_SIGNING_SECRET }}"
           secrets.slackBotUserOauthAccessToken: "{{ .SLACK_BOT_USER_OAUTH_ACCESS_TOKEN }}"
@@ -33,6 +31,7 @@ profiles:
       - kubeContext: docker-desktop
     patches:
       - op: add
-        path: /deploy/helm/releases/0/setValues/ingress.host
-        value: localhost
+        path: /deploy/helm/releases/0/setValues
+        value: 
+          ingress.host: localhost
 
