@@ -7,7 +7,7 @@
     "start": "node bot.js",
     "test": "nyc mocha test/**",
     "lint": "eslint '*.js' 'features/**' 'plugins/**' 'test/**'",
-    "lint-fix": "eslint '**/*.js' --ignore-pattern node_modules --fix"
+    "lint-fix": "eslint '*.js' 'features/**' 'plugins/**' 'test/**' --fix"
   },
   "dependencies": {
     "botbuilder-adapter-slack": "^1.0.11",

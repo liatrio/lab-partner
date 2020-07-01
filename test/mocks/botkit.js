@@ -1,6 +1,7 @@
 class MockBotkit {
     constructor(controller) {
         this.controller = controller;
+        this.plugins = controller.plugins;
         this.BotkitConversation = BotkitConversation;
     }
 

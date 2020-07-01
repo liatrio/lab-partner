@@ -59,6 +59,7 @@ const mockBot = (controller) => ({
         auth: {
             test: sinon.stub(),
         },
+        views: {},
     },
     reply: controller.reply.bind(controller, "channel"),
     replyEphemeral: controller.reply.bind(controller, "ephemeral"),
@@ -67,6 +68,8 @@ const mockBot = (controller) => ({
     say: controller.reply.bind(controller, "thread", []),
     startPrivateConversation: sinon.stub(),
     startConversationInThread: sinon.stub(),
+    startConversationInChannel: sinon.stub(),
+
     beginDialog: sinon.stub(),
     changeContext: sinon.stub(),
 });
