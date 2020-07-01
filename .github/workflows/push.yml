@@ -1,0 +1,22 @@
+name: push
+on: 
+- push
+- pull_request
+
+jobs:
+  build:
+    runs-on: ubuntu-18.04
+    steps:
+    - uses: actions/checkout@v2
+
+    - id: gitextra
+      uses: liatrio/github-actions/git-extra@master
+
+    - name: Helm Chart
+      uses: liatrio/github-actions/helm-push@master
+      with:
+        chart: charts/lab-partner
+        bucket: liatrio-helm
+        version: ${{steps.gitextra.outputs.version}}
+        appVersion: ${{steps.gitextra.outputs.version}}
+
