@@ -1,34 +1,39 @@
 const mongoose = require("mongoose");
 
-mongoose.connect(process.env.MONGO_URI);
-
-const userDetailSchema = new mongoose.Schema({
-    userId: String,
-    name: String,
-    value: String,
-});
-userDetailSchema.index({ userId: 1, name: 1 }, { unique: true });
-const UserDetail = mongoose.model("UserDetail", userDetailSchema);
-
-const userLinkSchema = new mongoose.Schema({
-    userId: String,
-    name: String,
-    url: String,
-});
-userLinkSchema.index({ userId: 1, name: 1 }, { unique: true });
-const UserLink = mongoose.model("UserLink", userLinkSchema);
-
-const userGaugeSchema = new mongoose.Schema({
-    userId: String,
-    name: String,
-    currentName: String,
-    currentValue: Number,
-    maxValue: Number,
-});
-userGaugeSchema.index({ userId: 1, name: 1 }, { unique: true });
-const UserGauge = mongoose.model("UserGauge", userGaugeSchema);
-
 module.exports = (controller) => {
+    mongoose.connect(process.env.MONGO_URI, {
+        useNewUrlParser: true,
+        useCreateIndex: true,
+        useUnifiedTopology: true,
+        useFindAndModify: false,
+    });
+
+    const userDetailSchema = new mongoose.Schema({
+        userId: String,
+        name: String,
+        value: String,
+    });
+    userDetailSchema.index({ userId: 1, name: 1 }, { unique: true });
+    const UserDetail = mongoose.model("UserDetail", userDetailSchema);
+
+    const userLinkSchema = new mongoose.Schema({
+        userId: String,
+        name: String,
+        url: String,
+    });
+    userLinkSchema.index({ userId: 1, name: 1 }, { unique: true });
+    const UserLink = mongoose.model("UserLink", userLinkSchema);
+
+    const userGaugeSchema = new mongoose.Schema({
+        userId: String,
+        name: String,
+        currentName: String,
+        currentValue: Number,
+        maxValue: Number,
+    });
+    userGaugeSchema.index({ userId: 1, name: 1 }, { unique: true });
+
+    const UserGauge = mongoose.model("UserGauge", userGaugeSchema);
     const storage = {
         name: "Storage",
         init: () => {
