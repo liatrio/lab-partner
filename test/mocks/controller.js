@@ -24,17 +24,9 @@ class MockController {
             slack: {
                 getUserInfo: sinon.stub(),
             },
-            aws: {
-                getCallerIdentity: sinon.stub(),
-                getRoleSessionArn: sinon.stub(),
-                getC9EnvironmentMemberships: sinon.stub(),
-                getC9EnvironmentMembershipOwner: sinon.stub(),
-                getC9EnvironmentMembershipShare: sinon.stub(),
-                shareC9Environment: sinon.stub(),
-                assumeRole: sinon.stub(),
-                signinToken: sinon.stub(),
-                ssoUrlGenerator: sinon.stub(),
-            },
+            help: {},
+            participants: {},
+            storage: {},
         };
     }
 
@@ -107,6 +99,13 @@ class MockController {
                     matches,
                 })
             );
+        }
+    }
+
+    async event(type, message) {
+        const handler = this.behavior.find((b) => b.type === type);
+        if (handler) {
+            await handler.cb(this.bot, message);
         }
     }
 

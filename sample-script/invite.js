@@ -6,6 +6,7 @@ module.exports = function (controller) {
             return;
         }
 
+        await controller.plugins.storage.setUserDetail(message.inviter, "Channel", `<#${message.channel}>`)
         await bot.startConversationInChannel(message.channel, message.user);
         const helpMessage = controller.plugins.help.getMessage();
         await bot.say({
