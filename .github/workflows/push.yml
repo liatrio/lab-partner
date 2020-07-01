@@ -29,3 +29,13 @@ jobs:
         appVersion: ${{steps.gitextra.outputs.version}}
         dependencies: '[{"name":"mongodb","url":"https://charts.bitnami.com/bitnami"}]'
 
+    - id: gitops
+      uses: liatrio/github-actions/gitty-up@master
+      if: github.ref == 'refs/heads/master'
+      with:
+        url: https://github.com/liatrio/lead-environments.git
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITTY_UP_TOKEN }}
+        file: aws/liatrio-sandbox/terragrunt.hcl
+        values: inputs.lab_partner_version=${{steps.gitextra.outputs.version}}
+
