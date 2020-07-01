@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lab-partner
+  labels:
+    {{- include "lab-partner.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "lab-partner.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      {{- include "lab-partner.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "lab-partner.name" . }}
+        app.kuberentes.io/instance: {{ .Release.Name }}
+        {{- include "lab-partner.selectorLabels" . | nindent 8 }}
+    spec:
+    {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      serviceAccountName: {{ include "lab-partner.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: lab-partner
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: {{ .Values.image.name }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          env:
+            - name: MONGO_URI
+              value: {{ .Values.mongodb.service.name }}
+            - name: CLIENT_SIGNING_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: lab-partner
+                  key: slackSigningSecret
+            - name: BOT_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: lab-partner
+                  key: slackBotUserOauthAccessToken
+            - name: TEAM
+              valueFrom:
+                secretKeyRef:
+                  name: lab-partner
+                  key: teamId
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
