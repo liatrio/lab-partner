@@ -28,6 +28,7 @@ describe("sample script / invite", () => {
     it("response to channel invite", async () => {
         const botUser = chance.hash();
         const blocks = [{ block: chance.hash() }];
+        controller.plugins.storage.setUserDetail = sinon.spy();
         controller.plugins.help.getMessage = sinon.stub();
         controller.plugins.help.getMessage.returns({ blocks });
         controller.bot.say = sinon.spy();

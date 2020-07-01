@@ -20,6 +20,7 @@ describe("sample script / invite", () => {
 
     beforeEach(async () => {
         controller = new MockController({});
+        controller.plugins.help.addCommand = sinon.spy();
         await progressFeature(controller);
     });
 
