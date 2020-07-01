@@ -19,4 +19,5 @@ jobs:
         bucket: liatrio-helm
         version: ${{steps.gitextra.outputs.version}}
         appVersion: ${{steps.gitextra.outputs.version}}
+        dependencies: '[{"name":"mongodb","url":"https://charts.bitnami.com/bitnami"}]'
 
