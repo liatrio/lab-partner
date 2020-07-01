@@ -1,13 +1,11 @@
 module.exports = (controller) => {
-    const renderParticipantsBlocks = async (participants) => {
-        return Promise.all(
-            participants.map((participant) =>
-                renderParticipantBlocks(participant)
-            )
-        ).then((participants) => participants.flat());
+    const renderParticipantsBlocks = (participants) => {
+        return participants
+            .map((participant) => renderParticipantBlocks(participant))
+            .flat();
     };
 
-    const renderParticipantBlocks = async (participant) => {
+    const renderParticipantBlocks = (participant) => {
         const links = participant.links.map((link) => {
             return {
                 type: "section",
@@ -22,7 +20,7 @@ module.exports = (controller) => {
                 type: "section",
                 text: {
                     type: "mrkdwn",
-                    text: participants.getGaugeString(gauge),
+                    text: participantsPlugin.getGaugeString(gauge),
                 },
             };
         });
@@ -64,10 +62,10 @@ module.exports = (controller) => {
         ];
     };
 
-    const participants = {
+    const participantsPlugin = {
         name: "Participants",
         init: () => {
-            controller.addPluginExtension("participants", participants);
+            controller.addPluginExtension("participants", participantsPlugin);
         },
         getParticipant: async (userId) => {
             const userInfo = controller.plugins.slack.getUserInfo(userId);
@@ -81,61 +79,66 @@ module.exports = (controller) => {
                 userId
             );
 
-            return Promise.all([userInfo, details, links, gauges]).then(
-                (result) => {
-                    return {
-                        info: result[0],
-                        details: result[1],
-                        links: result[2],
-                        gauges: result[3],
-                    };
-                }
-            );
+            const allItems = await Promise.all([
+                userInfo,
+                details,
+                links,
+                gauges,
+            ]);
+
+            return {
+                info: allItems[0],
+                details: allItems[1],
+                links: allItems[2],
+                gauges: allItems[3],
+            };
         },
         getParticipants: async () => {
             const allDetails = controller.plugins.storage.getUserDetails();
             const allLinks = controller.plugins.storage.getUserLinks();
             const allGauges = controller.plugins.storage.getUserGauges();
 
-            return Promise.all([allDetails, allLinks, allGauges]).then(
-                (result) => {
-                    const participants = [
-                        ...result[0],
-                        ...result[1],
-                        ...result[2],
-                    ]
-                        // remove duplicate users
-                        .filter((item, index, self) => {
-                            return (
-                                self.findIndex((i) => {
-                                    return i.userId === item.userId;
-                                }) === index
-                            );
-                        })
-                        // build participant object
-                        .map(async (item) => {
-                            const info = await controller.plugins.slack.getUserInfo(
-                                item.userId
-                            );
-                            const details = result[0].filter((detail) => {
-                                return detail.userId === item.userId;
-                            });
-                            const links = result[1].filter(
-                                (link) => link.userId === item.userId
-                            );
-                            const gauges = result[2].filter(
-                                (gauge) => gauge.userId === item.userId
-                            );
-                            return {
-                                info,
-                                details,
-                                links,
-                                gauges,
-                            };
-                        });
-                    return Promise.all(participants);
-                }
-            );
+            const allItems = await Promise.all([
+                allDetails,
+                allLinks,
+                allGauges,
+            ]);
+
+            const participants = [
+                ...allItems[0],
+                ...allItems[1],
+                ...allItems[2],
+            ]
+                // remove duplicate users
+                .filter((item, index, self) => {
+                    return (
+                        self.findIndex((i) => {
+                            return i.userId === item.userId;
+                        }) === index
+                    );
+                })
+                // build participant object
+                .map(async (item) => {
+                    const info = await controller.plugins.slack.getUserInfo(
+                        item.userId
+                    );
+                    const details = allItems[0].filter((detail) => {
+                        return detail.userId === item.userId;
+                    });
+                    const links = allItems[1].filter(
+                        (link) => link.userId === item.userId
+                    );
+                    const gauges = allItems[2].filter(
+                        (gauge) => gauge.userId === item.userId
+                    );
+                    return {
+                        info,
+                        details,
+                        links,
+                        gauges,
+                    };
+                });
+            return Promise.all(participants);
         },
         getParticipantBlocks: async (user) => {
             const participant = await controller.plugins.participants.getParticipant(
@@ -163,5 +166,5 @@ module.exports = (controller) => {
             )}${":x:".repeat(gauge.maxValue - gauge.currentValue)}`;
         },
     };
-    return participants;
+    return participantsPlugin;
 };
