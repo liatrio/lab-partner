@@ -1,6 +1,6 @@
 const sinon = require("sinon");
 const chance = require("chance").Chance();
-const should = require("chai").should(); // eslint-disable-line no-unused-vars
+const expect = require("chai").expect;
 
 const MockController = require("../mocks/controller");
 
@@ -81,20 +81,20 @@ describe("plugins / participants", () => {
 
             const participants = await participantsPlugin.getParticipants();
 
-            participants.should.have.lengthOf(3);
-            participants.should.deep.include({
+            expect(participants).to.have.lengthOf(3);
+            expect(participants).to.deep.include({
                 info: { id: user1 },
                 details: [detail1],
                 links: [],
                 gauges: [gauge1],
             });
-            participants.should.deep.include({
+            expect(participants).to.deep.include({
                 info: { id: user2 },
                 details: [detail2],
                 links: [link1],
                 gauges: [],
             });
-            participants.should.deep.include({
+            expect(participants).to.deep.include({
                 info: { id: user3 },
                 details: [],
                 links: [link2],
@@ -176,7 +176,7 @@ describe("plugins / participants", () => {
                 user
             );
             sinon.assert.calledWith(controller.plugins.slack.getUserInfo, user);
-            participant.should.deep.contain({
+            expect(participant).to.deep.contain({
                 info: { id: user },
                 details: [detail1, detail2],
                 links: [link1, link2],
@@ -195,8 +195,10 @@ describe("plugins / participants", () => {
                 user
             );
 
-            participantBlocks.should.have.lengthOf(1);
-            participantBlocks[0].text.text.should.contain("Nothing to display");
+            expect(participantBlocks).to.have.lengthOf(1);
+            expect(participantBlocks[0].text.text).to.contain(
+                "Nothing to display"
+            );
             sinon.assert.calledWith(
                 controller.plugins.participants.getParticipant,
                 user
@@ -240,23 +242,25 @@ describe("plugins / participants", () => {
                 user.id
             );
 
-            participantBlocks.should.have.lengthOf(3);
-            participantBlocks[0].should.contain.keys([
+            expect(participantBlocks).to.have.lengthOf(3);
+            expect(participantBlocks[0]).to.contain.keys([
                 "type",
                 "text",
                 "accessory",
                 "fields",
             ]);
-            participantBlocks[0].text.should.contain.keys(["type", "text"]);
-            participantBlocks[0].text.text.should.contain(user.real_name);
-            participantBlocks[1].should.contain.keys(["type", "text"]);
-            participantBlocks[1].text.should.contain.keys(["type", "text"]);
-            participantBlocks[1].text.text.should.contain(gauge.name);
-            participantBlocks[1].text.text.should.contain(gauge.currentName);
-            participantBlocks[2].should.contain.keys(["type", "text"]);
-            participantBlocks[2].text.should.contain.keys(["type", "text"]);
-            participantBlocks[2].text.text.should.contain(link.name);
-            participantBlocks[2].text.text.should.contain(link.url);
+            expect(participantBlocks[0].text).to.contain.keys(["type", "text"]);
+            expect(participantBlocks[0].text.text).to.contain(user.real_name);
+            expect(participantBlocks[1]).to.contain.keys(["type", "text"]);
+            expect(participantBlocks[1].text).to.contain.keys(["type", "text"]);
+            expect(participantBlocks[1].text.text).to.contain(gauge.name);
+            expect(participantBlocks[1].text.text).to.contain(
+                gauge.currentName
+            );
+            expect(participantBlocks[2]).to.contain.keys(["type", "text"]);
+            expect(participantBlocks[2].text).to.contain.keys(["type", "text"]);
+            expect(participantBlocks[2].text.text).to.contain(link.name);
+            expect(participantBlocks[2].text.text).to.contain(link.url);
             sinon.assert.calledWith(
                 controller.plugins.participants.getParticipant,
                 user.id
@@ -275,8 +279,8 @@ describe("plugins / participants", () => {
             sinon.assert.calledOnce(
                 controller.plugins.participants.getParticipants
             );
-            participantsBlocks.should.have.lengthOf(1);
-            participantsBlocks[0].text.text.should.contain(
+            expect(participantsBlocks).to.have.lengthOf(1);
+            expect(participantsBlocks[0].text.text).to.contain(
                 "Nothing to display"
             );
         });
@@ -325,23 +329,33 @@ describe("plugins / participants", () => {
             sinon.assert.calledOnce(
                 controller.plugins.participants.getParticipants
             );
-            participantsBlocks.should.have.lengthOf(6);
-            participantsBlocks[0].should.contain.keys([
+            expect(participantsBlocks).to.have.lengthOf(6);
+            expect(participantsBlocks[0]).to.contain.keys([
                 "accessory",
                 "fields",
                 "text",
                 "type",
             ]);
-            participantsBlocks[0].text.should.contain.keys(["type", "text"]);
-            participantsBlocks[0].text.text.should.contain(p1.info.real_name);
-            participantsBlocks[3].should.contain.keys([
+            expect(participantsBlocks[0].text).to.contain.keys([
+                "type",
+                "text",
+            ]);
+            expect(participantsBlocks[0].text.text).to.contain(
+                p1.info.real_name
+            );
+            expect(participantsBlocks[3]).to.contain.keys([
                 "accessory",
                 "fields",
                 "text",
                 "type",
             ]);
-            participantsBlocks[3].text.should.contain.keys(["type", "text"]);
-            participantsBlocks[3].text.text.should.contain(p2.info.real_name);
+            expect(participantsBlocks[3].text).to.contain.keys([
+                "type",
+                "text",
+            ]);
+            expect(participantsBlocks[3].text.text).to.contain(
+                p2.info.real_name
+            );
         });
     });
 });

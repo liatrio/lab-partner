@@ -1,5 +1,5 @@
 const sinon = require("sinon");
-const should = require("chai").should(); // eslint-disable-line no-unused-vars
+const expect = require("chai").expect;
 const chance = require("chance").Chance();
 
 const MockController = require("../mocks/controller");
@@ -46,7 +46,7 @@ describe("features / help", () => {
             await controller.userInput({ text: "help" });
             const replies = controller.getReplies();
 
-            replies.should.have.lengthOf(1);
+            expect(replies).to.have.lengthOf(1);
         });
     });
 });
