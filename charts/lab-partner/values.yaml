@@ -9,6 +9,7 @@ mongodb:
     name: lab-partner-mongodb
 
 image:
+  repository: liatrio
   name: lab-partner
   pullPolicy: IfNotPresent
   
