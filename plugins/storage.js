@@ -1,8 +1,39 @@
-let details = [];
-let links = [];
-let gauges = [];
+const mongoose = require("mongoose");
 
 module.exports = (controller) => {
+    mongoose.connect(process.env.MONGO_URI, {
+        useNewUrlParser: true,
+        useCreateIndex: true,
+        useUnifiedTopology: true,
+        useFindAndModify: false,
+    });
+
+    const userDetailSchema = new mongoose.Schema({
+        userId: String,
+        name: String,
+        value: String,
+    });
+    userDetailSchema.index({ userId: 1, name: 1 }, { unique: true });
+    const UserDetail = mongoose.model("UserDetail", userDetailSchema);
+
+    const userLinkSchema = new mongoose.Schema({
+        userId: String,
+        name: String,
+        url: String,
+    });
+    userLinkSchema.index({ userId: 1, name: 1 }, { unique: true });
+    const UserLink = mongoose.model("UserLink", userLinkSchema);
+
+    const userGaugeSchema = new mongoose.Schema({
+        userId: String,
+        name: String,
+        currentName: String,
+        currentValue: Number,
+        maxValue: Number,
+    });
+    userGaugeSchema.index({ userId: 1, name: 1 }, { unique: true });
+
+    const UserGauge = mongoose.model("UserGauge", userGaugeSchema);
     const storage = {
         name: "Storage",
         init: () => {
@@ -10,90 +41,54 @@ module.exports = (controller) => {
         },
 
         async setUserDetail(userId, name, value) {
-            // TODO replace with mongo db query
-            const index = details.findIndex(
-                (detail) => detail.userId === userId && detail.name === name
-            );
-            if (index !== -1) {
-                details.splice(index, 1);
-            }
-            details.push({ userId, name, value });
+            return UserDetail.findOneAndUpdate(
+                { userId, name },
+                { value },
+                { new: true, upsert: true }
+            ).exec();
         },
         async getUserDetails() {
-            // TODO replace with mongo db query
-            return Promise.resolve(details);
+            return UserDetail.find().exec();
         },
         async getUserDetailsForUser(userId) {
-            // TODO replace with mongo db query
-            return Promise.resolve(
-                details.filter((detail) => detail.userId === userId)
-            );
+            return UserDetail.find({ userId }).exec();
         },
         async getUserDetailForUser(userId, name) {
-            return Promise.resolve(
-                details.filter(
-                    (detail) => detail.userId === userId && detail.name === name
-                )
-            );
+            return UserDetail.findOne({ userId, name }).exec();
         },
 
         async setUserGauge(userId, name, currentName, currentValue, maxValue) {
-            // TODO replace with mongo db query
-            const index = gauges.findIndex(
-                (gauge) => gauge.userId === userId && gauge.name === name
-            );
-            if (index !== -1) {
-                gauges.splice(index, 1);
-            }
-            gauges.push({ userId, name, currentName, currentValue, maxValue });
-            return Promise.resolve(gauges[gauges.length - 1]);
+            return UserGauge.findOneAndUpdate(
+                { userId, name },
+                { currentName, currentValue, maxValue },
+                { new: true, upsert: true }
+            ).exec();
         },
         async getUserGauges() {
-            // TODO replace with mongo db query
-            return Promise.resolve(gauges);
+            return UserGauge.find().exec();
         },
         async getUserGaugesForUser(userId) {
-            // TODO replace with mongo db query
-            return Promise.resolve(
-                gauges.filter((gauge) => gauge.userId === userId)
-            );
+            return UserGauge.find({ userId }).exec();
         },
         async getUserGaugeForUser(userId, name) {
-            // TODO replace with mongo db query
-            return Promise.resolve(
-                gauges.filter(
-                    (gauge) => gauge.userId === userId && gauge.name === name
-                )[0]
-            );
+            return UserGauge.findOne({ userId, name }).exec();
         },
 
         async setUserLink(userId, name, url) {
-            // TODO replace with mongo db query
-            const index = links.findIndex(
-                (link) => link.userId === userId && link.name === name
-            );
-            if (index !== -1) {
-                links.splice(index, 1);
-            }
-            links.push({ userId, name, url });
+            return UserLink.findOneAndUpdate(
+                { userId, name },
+                { url },
+                { new: true, upsert: true }
+            ).exec();
         },
         async getUserLinks() {
-            // TODO replace with mongo db query
-            return Promise.resolve(links);
+            return UserLink.find().exec();
         },
         async getUserLinksForUser(userId) {
-            // TODO replace with mongo db query
-            return Promise.resolve(
-                links.filter((link) => link.userId === userId)
-            );
+            return UserLink.find({ userId }).exec();
         },
         async getUserLinkForUser(userId, name) {
-            // TODO replace with mongo db query
-            return Promise.resolve(
-                links.filter(
-                    (link) => link.userId === userId && link.name === name
-                )
-            );
+            return UserLink.findOne({ userId, name }).exec();
         },
     };
 
