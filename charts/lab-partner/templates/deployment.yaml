@@ -2,7 +2,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: lab-partner
-  namespace: {{ .Values.namespace }}
   labels:
     {{- include "lab-partner.labels" . | nindent 4 }}
 spec:

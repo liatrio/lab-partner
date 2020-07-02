@@ -3,7 +3,6 @@ apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: lab-partner
-  namespace: {{ .Values.namespace }}
   labels:
     {{- include "lab-partner.labels" . | nindent 4 }}
   {{- with .Values.ingress.annotations }}
