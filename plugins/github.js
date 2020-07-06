@@ -1,42 +1,48 @@
 const { Octokit } = require("@octokit/rest");
-const octokit = new Octokit({
-    auth: process.env.GITHUB_TOKEN,
-});
+let octokit;
 
 const github = {
     name: "Github",
     init: (controller) => {
         controller.addPluginExtension("github", github);
     },
-    getGithubUser: (username) => {
-        let resp = octokit.users.getByUsername({
+    getOctokit: () => {
+        if (octokit === undefined) {
+            octokit = new Octokit({
+                auth: process.env.GITHUB_TOKEN,
+            });
+        }
+        return octokit;
+    },
+    getGithubUser: async (username) => {
+        let resp = await github.getOctokit().users.getByUsername({
             username,
         });
         return resp;
     },
     getUserRepositories: async (username) => {
-        let resp = await octokit.repos.listForUser({
+        let resp = await github.getOctokit().repos.listForUser({
             username,
         });
         const repos = resp.data;
         return repos;
     },
     getRepoCommits: async (owner, repo) => {
-        let resp = await octokit.repos.listCommits({
+        let resp = await github.getOctokit().repos.listCommits({
             owner,
             repo,
         });
         const commits = resp.data;
         return commits;
     },
-    watchForNewRepo: async (username, callback, test = false) => {
+    watchForNewRepo: async (username, callback) => {
         let lastRepoList = [];
-        let resp = await octokit.repos.listForUser({
+        let resp = await github.getOctokit().repos.listForUser({
             username,
         });
         lastRepoList = resp.data;
-        let watch = setInterval(async () => {
-            resp = await octokit.repos.listForUser({
+        const interval = setInterval(async () => {
+            resp = await github.getOctokit().repos.listForUser({
                 username,
             });
             const currentRepoList = resp.data;
@@ -49,6 +55,7 @@ const github = {
                 // Gather IDs for all of the repos
                 for (let i = 0; i < lastRepoList.length; i++)
                     lastIds.push(lastRepoList[i].id);
+
                 for (let i = 0; i < currentRepoList.length; i++)
                     currentIds.push(currentRepoList[i].id);
 
@@ -62,35 +69,33 @@ const github = {
                 callback(repo);
             });
             lastRepoList = currentRepoList;
-            if (test) {
-                clearInterval(watch);
-            }
-        }, 20000);
+        }, 60000);
+        return () => {
+            clearInterval(interval);
+        };
     },
-    watchForNewCommits: async (username, repo, callback, test = false) => {
-        let resp = test;
-        //let resp = await octokit.repos.listCommits({
-        //    username,
-        //    repo,
-        //});
-        //let lastCommit = resp.data[0];
-        //let watch = setInterval(async () => {
-        //    resp = await octokit.repos.listCommits({
-        //        username,
-        //        repo,
-        //    });
-        //    const currentCommit = resp.data[0];
-        //    if (currentCommit.id == lastCommit.id) {
-        //        /* No new commit, nothing to do  */
-        //    } else {
-        //        callback(currentCommit);
-        //    }
-        //    lastCommit = currentCommit;
-        //    if (test) {
-        //        clearInterval(watch);
-        //    }
-        //}, 20000);
-        return resp;
+    watchForNewCommits: async (owner, repo, callback) => {
+        let resp = await github.getOctokit().repos.listCommits({
+            owner,
+            repo,
+        });
+        let lastCommit = resp.data[0];
+        const interval = setInterval(async () => {
+            resp = await github.getOctokit().repos.listCommits({
+                owner,
+                repo,
+            });
+            const currentCommit = resp.data[0];
+            if (currentCommit.sha == lastCommit.sha) {
+                /* No new commit, nothing to do  */
+            } else {
+                callback(currentCommit);
+            }
+            lastCommit = currentCommit;
+        }, 60000);
+        return () => {
+            return clearInterval(interval);
+        };
     },
 };
 

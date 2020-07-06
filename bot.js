@@ -75,8 +75,10 @@ controller.ready(() => {
         return;
     }
     files.forEach((file) => {
-        let plugin = require(path.join(pluginsPath, file));
-        controller.usePlugin(plugin);
+        if (file.endsWith(".js")) {
+            let plugin = require(path.join(pluginsPath, file));
+            controller.usePlugin(plugin);
+        }
     });
 
     // load built in feature
