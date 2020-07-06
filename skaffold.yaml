@@ -1,8 +1,8 @@
-apiVersion: skaffold/v1
+apiVersion: skaffold/v2beta5
 kind: Config
 build:
   artifacts:
-    - image: lab-partner
+    - image: liatrio/lab-partner
       context: ./
   local: {}
 
@@ -12,8 +12,8 @@ deploy:
       - name: lab-partner
         chartPath: charts/lab-partner
         wait: true
-        values:
-          image.name: lab-partner
+        artifactOverrides:
+          image: liatrio/lab-partner
         setValueTemplates:
           secrets.slackSigningSecret: "{{ .SLACK_SIGNING_SECRET }}"
           secrets.slackBotUserOauthAccessToken: "{{ .SLACK_BOT_USER_OAUTH_ACCESS_TOKEN }}"

@@ -29,8 +29,8 @@ spec:
         - name: lab-partner
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: {{ .Values.image.repository }}/{{ .Values.image.name }}
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          image: {{ .Values.image }}
+          imagePullPolicy: {{ .Values.imageConfig.pullPolicy }}
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}

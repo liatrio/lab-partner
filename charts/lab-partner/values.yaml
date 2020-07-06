@@ -8,9 +8,9 @@ mongodb:
   service:
     name: lab-partner-mongodb
 
-image:
-  repository: liatrio
-  name: lab-partner
+image: liatrio/lab-partner
+
+imageConfig:
   pullPolicy: IfNotPresent
   
 secrets:
