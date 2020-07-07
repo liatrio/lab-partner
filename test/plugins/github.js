@@ -13,11 +13,11 @@ describe("plugins / github", () => {
 
     describe("Setup", () => {
         describe("getOctokit", () => {
-            it("should return Octokit with auth", () => {
+            it("should return Octokit with auth if undefined", () => {
                 process.env.GITHUB_TOKEN = chance.word();
                 github.getOctokit();
+                delete process.env.GITHUB_TOKEN;
             });
-            delete process.env.GITHUB_TOKEN;
         });
     });
 
@@ -160,6 +160,22 @@ describe("plugins / github", () => {
                 stop();
                 sinon.assert.calledTwice(octokitStub.repos.listCommits);
                 sinon.assert.calledOnce(callback);
+            });
+            it("should do nothing for no new commits", async () => {
+                octokitStub.repos.listCommits
+                    .onFirstCall()
+                    .resolves({ data: [commitList.data[2]] });
+                octokitStub.repos.listCommits
+                    .onSecondCall()
+                    .resolves({ data: [commitList.data[2]] });
+                const stop = await github.watchForNewCommits(
+                    username,
+                    repo,
+                    callback
+                );
+                await clock.nextAsync();
+                stop();
+                sinon.assert.calledTwice(octokitStub.repos.listCommits);
             });
         });
     });

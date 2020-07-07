@@ -47,24 +47,11 @@ const github = {
             });
             const currentRepoList = resp.data;
             var newRepoList = [];
-            if (lastRepoList.length == currentRepoList.length) newRepoList = [];
-            else {
-                // Find unique elements
-                var lastIds = [];
-                var currentIds = [];
-                // Gather IDs for all of the repos
-                for (let i = 0; i < lastRepoList.length; i++)
-                    lastIds.push(lastRepoList[i].id);
-
-                for (let i = 0; i < currentRepoList.length; i++)
-                    currentIds.push(currentRepoList[i].id);
-
-                for (let i = 0; i < currentIds.length; i++) {
-                    if (!lastIds.includes(currentIds[i])) {
-                        newRepoList.push(currentRepoList[i]);
-                    }
-                }
-            }
+            // Find unique elements
+            // Gather IDs for all of the repos
+            newRepoList = currentRepoList.filter(
+                (repo) => !lastRepoList.includes(repo)
+            );
             newRepoList.forEach((repo) => {
                 callback(repo);
             });
