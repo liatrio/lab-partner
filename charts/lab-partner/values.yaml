@@ -8,8 +8,8 @@ mongodb:
   service:
     name: lab-partner-mongodb
 
-image:
-  name: lab-partner
+image: 
+  name: liatrio/lab-partner
   pullPolicy: IfNotPresent
   
 secrets:
