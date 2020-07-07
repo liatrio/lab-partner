@@ -13,7 +13,7 @@ deploy:
         chartPath: charts/lab-partner
         wait: true
         artifactOverrides:
-          image: liatrio/lab-partner
+          image.name: liatrio/lab-partner
         setValueTemplates:
           secrets.slackSigningSecret: "{{ .SLACK_SIGNING_SECRET }}"
           secrets.slackBotUserOauthAccessToken: "{{ .SLACK_BOT_USER_OAUTH_ACCESS_TOKEN }}"
