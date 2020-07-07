@@ -86,9 +86,7 @@ const github = {
                 repo,
             });
             const currentCommit = resp.data[0];
-            if (currentCommit.sha == lastCommit.sha) {
-                /* No new commit, nothing to do  */
-            } else {
+            if (currentCommit.sha != lastCommit.sha) {
                 callback(currentCommit);
             }
             lastCommit = currentCommit;
