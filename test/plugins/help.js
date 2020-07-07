@@ -1,6 +1,6 @@
 const sinon = require("sinon");
 const chance = require("chance").Chance();
-const should = require("chai").should(); // eslint-disable-line no-unused-vars
+const expect = require("chai").expect;
 
 const MockController = require("../mocks/controller");
 
@@ -42,10 +42,10 @@ describe("plugins / help", () => {
         it("should return help message", () => {
             const message = help.getMessage();
 
-            message.blocks.should.have.length(4);
-            message.blocks[3].text.text.should.contain(command);
-            message.blocks[3].text.text.should.contain(name);
-            message.blocks[3].text.text.should.contain(description);
+            expect(message.blocks).to.have.length(4);
+            expect(message.blocks[3].text.text).to.contain(command);
+            expect(message.blocks[3].text.text).to.contain(name);
+            expect(message.blocks[3].text.text).to.contain(description);
         });
     });
 });
