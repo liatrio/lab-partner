@@ -34,4 +34,5 @@ profiles:
         path: /deploy/helm/releases/0/setValues
         value: 
           ingress.host: localhost
-
+          mongodb.auth.enabled: false
+      

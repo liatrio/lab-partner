@@ -37,7 +37,7 @@ spec:
               protocol: TCP
           env:
             - name: MONGO_URI
-              value: mongodb://{{ .Values.mongodb.service.name }}:27017
+              value: mongodb://root:{{ .Values.mongodb.auth.rootPassword }}@{{ .Values.mongodb.service.name }}:27017
             - name: CLIENT_SIGNING_SECRET
               valueFrom:
                 secretKeyRef:
