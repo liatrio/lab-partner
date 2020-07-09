@@ -18,6 +18,7 @@ deploy:
           secrets.slackSigningSecret: "{{ .SLACK_SIGNING_SECRET }}"
           secrets.slackBotUserOauthAccessToken: "{{ .SLACK_BOT_USER_OAUTH_ACCESS_TOKEN }}"
           secrets.teamId: "{{ .TEAM_ID }}"
+          mongodb.auth.rootPassword: "{{ .MONGODB_PASSWORD }}"
 
 portForward:
   - resourceType: service
@@ -34,5 +35,4 @@ profiles:
         path: /deploy/helm/releases/0/setValues
         value: 
           ingress.host: localhost
-          mongodb.auth.enabled: false
-      
+
