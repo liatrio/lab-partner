@@ -7,9 +7,6 @@ replicaCount: 1
 mongodb:
   service:
     name: lab-partner-mongodb
-  auth:
-    rootPassword: ""
-  
 
 image: 
   name: liatrio/lab-partner
