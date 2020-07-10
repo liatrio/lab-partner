@@ -5,8 +5,14 @@
 replicaCount: 1
 
 mongodb:
+  initdbScriptsConfigMap: lab-partner-mongodb-initdbscripts
   service:
     name: lab-partner-mongodb
+  auth:
+    custom_user:
+      username: lab-partner
+      database: lab-partner
+      password:
 
 image: 
   name: liatrio/lab-partner
