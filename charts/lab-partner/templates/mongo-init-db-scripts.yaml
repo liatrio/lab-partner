@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: lab-partner-mongodb-initdbscripts
+data:
+  lab-partner.js: |
+    use lab-partner;
+    db.createUser(
+      {
+        user: "{{ .Values.mongodb.auth.custom_user.username }}",
+        pwd: "{{ .Values.mongodb.auth.custom_user.password }}",
+        roles: [
+          {
+            role: "readWrite",
+            db: "BotFramework"
+          },
+          {
+            role: "readWrite",
+            db: "lab-partner"
+          }
+        ]
+      }
+    );
