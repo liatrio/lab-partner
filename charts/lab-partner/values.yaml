@@ -13,6 +13,9 @@ mongodb:
       username: lab-partner
       database: lab-partner
       password:
+  podLabels:
+    app: mongodb
+  #useStatefulSet: true
 
 image: 
   name: liatrio/lab-partner
@@ -30,7 +33,7 @@ fullnameOverride: ""
 serviceAccount:
   create: true
   annotations: {}
-  name:
+  name: lab-partner
 
 podSecurityContext: {}
 
