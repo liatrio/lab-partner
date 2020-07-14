@@ -10,40 +10,21 @@ const kubernetes = {
     },
     getK8s: () => {
         if (kc === undefined) {
-            const kubeConfig = new KubeConfig();
-
-            if (process.env.KUBECONFIG) {
-                kubeConfig.loadFromDefault();
-            } else {
-                kubeConfig.loadFromCluster();
-            }
-
-            const backend = kubeConfig ? new Request(kubeConfig) : undefined;
-            const version = "1.13";
-            kc = backend
-                ? new Client({ backend, version })
-                : new Client({ version });
+          const version = "1.13";
+          kc = Client({ version });
         }
         return kc;
     },
-    getNamespaces: async () => {
-        let resp = await kubernetes
-            .getK8s()
-            .api.v1.namespaces("default")
-            .pods.get();
-        console.log(resp);
-    },
-    // watchForEvents: async (namespace, callback) => {
-    //     let lastEventList = [];
-    //     let resp = await kubernetes
-    //         .getK8s()
-    //         .api.v1.namespaces(namespace)
-    //         .events.get();
-    //     // Check for events
-    //     const interval = setInterval(async () => {
+    watchForEvents: async (namespace, callback) => {
+        const stream = kubernetes.getK8s().apis.v1.watch.namespaces(namespace).pods.getStream();
+        const jsonStream = new JSONStream();
+        stream.pipe(jsonStream);
+        jsonStream.on('data', obj =>{
+            console.log('Event', JSON.stringify(obj, null, 2))
+        });
 
-    //     }, 60000);
-    // },
+        return stream;
+    },
 };
 
 module.exports = kubernetes;
