@@ -25,6 +25,10 @@ spec:
       serviceAccountName: {{ include "lab-partner.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      initContainers:
+        - name: wait-for-mongodb
+          image: bitnami/kubectl:1.15
+          args: ['wait','--for=condition=ready','pod', '-l app=mongodb','--timeout=300s']
       containers:
         - name: lab-partner
           securityContext:
@@ -37,7 +41,10 @@ spec:
               protocol: TCP
           env:
             - name: MONGO_URI
-              value: {{ .Values.mongodb.service.name }}
+              valueFrom:
+                secretKeyRef:
+                  name: lab-partner
+                  key: mongoUri
             - name: CLIENT_SIGNING_SECRET
               valueFrom:
                 secretKeyRef:

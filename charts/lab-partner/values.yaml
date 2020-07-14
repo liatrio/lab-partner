@@ -5,11 +5,19 @@
 replicaCount: 1
 
 mongodb:
+  initdbScriptsConfigMap: lab-partner-mongodb-initdbscripts
   service:
     name: lab-partner-mongodb
+  auth:
+    custom_user:
+      username: lab-partner
+      database: lab-partner
+      password:
+  podLabels:
+    app: mongodb
 
-image:
-  name: lab-partner
+image: 
+  name: liatrio/lab-partner
   pullPolicy: IfNotPresent
   
 secrets:
@@ -24,7 +32,7 @@ fullnameOverride: ""
 serviceAccount:
   create: true
   annotations: {}
-  name:
+  name: lab-partner
 
 podSecurityContext: {}
 
