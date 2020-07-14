@@ -1,7 +1,8 @@
-const { KubeConfig } = require("kubernetes-client");
+//const { KubeConfig } = require("kubernetes-client");
 const Client = require("kubernetes-client").Client;
-const Request = require("kubernetes-client/backends/request");
-let kc;
+//const Request = require("kubernetes-client/backends/request");
+//const config = require("kubernetes-client/backends/request").config;
+let client;
 
 const kubernetes = {
     name: "Kubernetes",
@@ -9,28 +10,29 @@ const kubernetes = {
         controller.addPluginExtension("kubernetes", kubernetes);
     },
     getK8s: () => {
-        if (kc === undefined) {
-            const kubeConfig = new KubeConfig();
-
+        if (client === undefined) {
+            const version = "1.13";
+            const client = new Client({
+                version: version,
+            });
+            /*
             if (process.env.KUBECONFIG) {
                 kubeConfig.loadFromDefault();
             } else {
                 kubeConfig.loadFromCluster();
             }
-
             const backend = kubeConfig ? new Request(kubeConfig) : undefined;
             const version = "1.13";
             kc = backend
                 ? new Client({ backend, version })
                 : new Client({ version });
+            */
+            return client;
         }
-        return kc;
+        return client;
     },
-    getNamespaces: async () => {
-        let resp = await kubernetes
-            .getK8s()
-            .api.v1.namespaces("default")
-            .pods.get();
+    getPods: async () => {
+        let resp = await kubernetes.getK8s().api.v1.namespaces.get();
         console.log(resp);
     },
     // watchForEvents: async (namespace, callback) => {
