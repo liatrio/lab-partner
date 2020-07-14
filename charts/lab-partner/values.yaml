@@ -15,7 +15,6 @@ mongodb:
       password:
   podLabels:
     app: mongodb
-  #useStatefulSet: true
 
 image: 
   name: liatrio/lab-partner
