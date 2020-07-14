@@ -16,9 +16,33 @@ const kubernetes = {
         return kc;
     },
     watchForEvents: async (namespace, callback) => {
-        const watch = Watch(kubernetes.getK8s());
-        watch.start("events", namespace, callback, "api", "v1", null);
-        return watch.stop();
+        try {
+            if (namespace === "") {
+                stream = await kubernetes.getK8s().api.v1.watch['events'].getStream();
+            } else {
+                stream = await kubernetes.getK8s().api.v1.watch.namespaces(namespace)['events'].getStream();
+            }
+        } catch (e) {
+            console.log(e);
+        }
+        const jsonStream = new JSONStream();
+        stream.pipe(jsonStream);
+        let reader = aw.createReader(jsonStream);
+
+        let object;
+        let result;
+
+        while (null !== (object = await reader.readAsync())) {
+            if (object.type === "ADDED" || object.type === "MODIFIED") {
+                result = await callback(object.type, object.object);
+                if (result === false && stream !== null) {
+                    stream.destroy();
+                    stream = null;
+                }
+            }
+        }
+
+        return stream.destroy();
     },
 };
 
