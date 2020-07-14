@@ -16,6 +16,7 @@
     "botkit": "^4.6.2",
     "botkit-plugin-cms": "^1.0.3",
     "dotenv": "^7.0.0",
+    "kubernetes-client": "^9.0.0",
     "mongoose": "^5.9.20",
     "node-cache": "^5.1.1"
   },
