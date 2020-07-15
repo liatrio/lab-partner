@@ -1,7 +1,10 @@
 const Client = require("kubernetes-client").Client;
-const Watch = require("./watch");
+const JSONStream = require("json-stream");
+const aw = require("awaitify-stream");
 
 let kc;
+let stream;
+let run;
 
 const kubernetes = {
     name: "Kubernetes",
@@ -15,34 +18,55 @@ const kubernetes = {
         }
         return kc;
     },
-    watchForEvents: async (namespace, callback) => {
-        try {
-            if (namespace === "") {
-                stream = await kubernetes.getK8s().api.v1.watch['events'].getStream();
-            } else {
-                stream = await kubernetes.getK8s().api.v1.watch.namespaces(namespace)['events'].getStream();
-            }
-        } catch (e) {
-            console.log(e);
-        }
-        const jsonStream = new JSONStream();
-        stream.pipe(jsonStream);
-        let reader = aw.createReader(jsonStream);
-
-        let object;
-        let result;
-
-        while (null !== (object = await reader.readAsync())) {
-            if (object.type === "ADDED" || object.type === "MODIFIED") {
-                result = await callback(object.type, object.object);
-                if (result === false && stream !== null) {
-                    stream.destroy();
-                    stream = null;
+    startWatch: async (resource, namespace, callback, queryString = null) => {
+        run = true;
+        do {
+            try {
+                let k8s;
+                console.log("Resource", resource);
+                if (resource.group === "" || resource.version === "") {
+                    k8s = kubernetes.getK8s().api.v1;
+                } else {
+                    k8s = kubernetes.getK8s().apis[resource.group][
+                        resource.version
+                    ];
                 }
-            }
-        }
+                try {
+                    if (namespace === "") {
+                        stream = await k8s.watch[resource.type].getStream(
+                            queryString
+                        ); // eslint-disable-line no-await-in-loop
+                    } else {
+                        stream = await k8s.watch
+                            .namespaces(namespace)
+                            [resource.type].getStream(queryString); // eslint-disable-line no-await-in-loop
+                    }
+                } catch (e) {
+                    console.log(e);
+                }
 
-        return stream.destroy();
+                const jsonStream = new JSONStream();
+                stream.pipe(jsonStream);
+                let reader = aw.createReader(jsonStream);
+
+                let object;
+                while (null !== (object = await reader.readAsync())) {
+                    if (object.type === "ADDED" || object.type === "MODIFIED") {
+                        console.log(run);
+                        callback(object.type, object.object);
+                    }
+                }
+            } catch (e) {
+                console.log(e);
+            }
+        } while (run);
+    },
+    stopWatch: () => {
+        run = false;
+        if (stream) {
+            stream.abort();
+            stream = null;
+        }
     },
 };
 
