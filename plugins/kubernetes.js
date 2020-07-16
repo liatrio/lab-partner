@@ -1,10 +1,8 @@
 const Client = require("kubernetes-client").Client;
-const JSONStream = require("json-stream");
+//const JSONStream = require("json-stream");
 const aw = require("awaitify-stream");
 
 let kc;
-let stream;
-let run;
 
 const kubernetes = {
     name: "Kubernetes",
@@ -18,55 +16,59 @@ const kubernetes = {
         }
         return kc;
     },
-    startWatch: async (resource, namespace, callback, queryString = null) => {
-        run = true;
-        do {
-            try {
-                let k8s;
-                console.log("Resource", resource);
-                if (resource.group === "" || resource.version === "") {
-                    k8s = kubernetes.getK8s().api.v1;
-                } else {
-                    k8s = kubernetes.getK8s().apis[resource.group][
-                        resource.version
-                    ];
-                }
+    startWatch: (resource, namespace, callback, queryString = null) => {
+        let run = true;
+        let stream;
+
+        const watcher = async () => {
+            do {
                 try {
-                    if (namespace === "") {
-                        stream = await k8s.watch[resource.type].getStream(
-                            queryString
-                        ); // eslint-disable-line no-await-in-loop
+                    let k8s;
+                    if (resource.group === "" || resource.version === "") {
+                        k8s = kubernetes.getK8s().api.v1;
                     } else {
-                        stream = await k8s.watch
-                            .namespaces(namespace)
-                            [resource.type].getStream(queryString); // eslint-disable-line no-await-in-loop
+                        k8s = kubernetes.getK8s().apis[resource.group][
+                            resource.version
+                        ];
+                    }
+                    try {
+                        if (namespace === "") {
+                            stream = await k8s.watch[
+                                resource.type
+                            ].getObjectStream(queryString); // eslint-disable-line no-await-in-loop
+                        } else {
+                            stream = await k8s.watch
+                                .namespaces(namespace)
+                                [resource.type].getObjectStream(queryString); // eslint-disable-line no-await-in-loop
+                        }
+                    } catch (e) {
+                        console.log(e);
+                    }
+
+                    //const jsonStream = new JSONStream();
+                    //stream.pipe(jsonStream);
+                    let reader = aw.createReader(stream);
+
+                    let object;
+                    while (null !== (object = await reader.readAsync())) {
+                        console.log(run);
+                        callback(object.type, object.object);
                     }
                 } catch (e) {
                     console.log(e);
                 }
+            } while (run);
+        };
+        watcher();
 
-                const jsonStream = new JSONStream();
-                stream.pipe(jsonStream);
-                let reader = aw.createReader(jsonStream);
-
-                let object;
-                while (null !== (object = await reader.readAsync())) {
-                    if (object.type === "ADDED" || object.type === "MODIFIED") {
-                        console.log(run);
-                        callback(object.type, object.object);
-                    }
-                }
-            } catch (e) {
-                console.log(e);
+        return () => {
+            run = false;
+            if (stream) {
+                stream.destroy();
+                stream = null;
+                console.log("Stream destroyed");
             }
-        } while (run);
-    },
-    stopWatch: () => {
-        run = false;
-        if (stream) {
-            stream.abort();
-            stream = null;
-        }
+        };
     },
 };
 
