@@ -53,7 +53,8 @@ const kubernetes = {
                         const newEventTime = Date.parse(
                             object.object.metadata.creationTimestamp
                         );
-                        if (newEventTime > startTime) {
+                        if (newEventTime < startTime) {
+                            console.log("Hi");
                             callback(object.type, object.object);
                         }
                     }
