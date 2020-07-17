@@ -16,7 +16,12 @@ const kubernetes = {
         }
         return kc;
     },
-    startWatch: (resource, namespace, callback, queryString = null) => {
+    startWatch: (
+        resource,
+        namespace = "default",
+        callback,
+        queryString = null
+    ) => {
         let run = true;
         let stream;
 
@@ -32,15 +37,9 @@ const kubernetes = {
                         ];
                     }
                     try {
-                        if (namespace === "") {
-                            stream = await k8s.watch[
-                                resource.type
-                            ].getObjectStream(queryString); // eslint-disable-line no-await-in-loop
-                        } else {
-                            stream = await k8s.watch
-                                .namespaces(namespace)
-                                [resource.type].getObjectStream(queryString); // eslint-disable-line no-await-in-loop
-                        }
+                        stream = await k8s.watch
+                            .namespaces(namespace)
+                            [resource.type].getObjectStream(queryString); // eslint-disable-line no-await-in-loop
                     } catch (e) {
                         console.log(e);
                     }
@@ -53,9 +52,12 @@ const kubernetes = {
                         const newEventTime = Date.parse(
                             object.object.metadata.creationTimestamp
                         );
-                        if (newEventTime < startTime) {
-                            console.log("Hi");
+                        if (newEventTime > startTime) {
                             callback(object.type, object.object);
+                        }
+                        if (run === false) {
+                            stream.destroy();
+                            break;
                         }
                     }
                 } catch (e) {
@@ -63,15 +65,15 @@ const kubernetes = {
                 }
             } while (run);
         };
-        watcher();
+        const result = watcher();
 
-        return () => {
+        return async () => {
             run = false;
             if (stream) {
                 stream.destroy();
                 stream = null;
-                console.log("Stream destroyed");
             }
+            return result;
         };
     },
 };
