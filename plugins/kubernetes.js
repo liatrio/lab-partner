@@ -43,7 +43,6 @@ const kubernetes = {
                     } catch (e) {
                         console.log(e);
                     }
-
                     let reader = aw.createReader(stream);
 
                     let object;
