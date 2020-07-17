@@ -47,8 +47,14 @@ const kubernetes = {
                     let reader = aw.createReader(stream);
 
                     let object;
+                    const startTime = Date.now();
                     while (null !== (object = await reader.readAsync())) {
-                        callback(object.type, object.object);
+                        const newEventTime = Date.parse(
+                            object.object.metadata.creationTimestamp
+                        );
+                        if (newEventTime < startTime) {
+                            callback(object.type, object.object);
+                        }
                     }
                 } catch (e) {
                     console.log(e);

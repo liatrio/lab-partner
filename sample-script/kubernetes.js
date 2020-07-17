@@ -26,13 +26,14 @@ module.exports = function (controller) {
             resource: "",
             group: "",
         };
+        console.log(Date.now());
         stop = controller.plugins.kubernetes.startWatch(
             kubeResource,
             "default",
             (type, object) => {
-                console.log("Event detected");
-                console.log("Type", type);
-                console.log("Object", object);
+                const timestamp = object.metadata.creationTimestamp;
+                console.log("Object", timestamp);
+                console.log("Formatted", Date.parse(timestamp));
             }
         );
 
