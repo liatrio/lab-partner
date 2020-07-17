@@ -3,6 +3,9 @@ const { BotkitConversation } = require("botkit");
 module.exports = function (controller) {
     let stop;
 
+    controller.plugins.help.addCommand("watch <resources>", "", "Watch a specific Kubernetes resource");
+    controller.plugins.help.addCommand("kill watch", "", "Kill existing watch on Kubernetes resource");
+
     controller.hears(new RegExp(/((watch)$)|((watch) [a-zA-Z]*$)/), "direct_mention", async (bot, message) => {
         var trimmedMessage = message.text.replace("watch ", "");
         if (stop != undefined) {
@@ -39,7 +42,7 @@ module.exports = function (controller) {
             resource: "",
             group: "",
         };
-        stop = controller.plugins.kubernetes.startWatch(
+        stop = controller.plugins.kubernetes.watch(
             kubeResource,
             "default",
             (type, object) => {
@@ -83,5 +86,5 @@ module.exports = function (controller) {
             });
             stop = undefined;
         }
-    }); 
+    });
 }

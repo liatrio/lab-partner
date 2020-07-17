@@ -13,12 +13,7 @@ const kubernetes = {
         kc = new Client({ version });
         return kc;
     },
-    startWatch: (
-        resource,
-        namespace = "default",
-        callback,
-        queryString = null
-    ) => {
+    watch: (resource, namespace = "default", callback, queryString = null) => {
         let run = true;
         let stream;
 
@@ -63,7 +58,7 @@ const kubernetes = {
         };
         const result = watcher();
 
-        return async () => {
+        return () => {
             run = false;
             if (stream) {
                 stream.destroy();

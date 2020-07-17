@@ -48,22 +48,25 @@ describe("plugins / kubernetes", () => {
             });
         });
 
-        it("watching: handles specified resources", async () => {
+        it("watching: detect new events", async () => {
             const cb = sinon.spy();
             const kubeResource = {
                 type: "event",
                 resource: "",
                 group: "",
             };
-            const testObject =
-                '{"type": "ADDED", "object": {"metadata": {"creationTimestamp": "3000-07-16T18:44:46Z"}}}';
 
-            const stop = kubernetes.startWatch(
-                kubeResource,
-                "test-namespace",
-                cb
-            );
-            this.stream.push(testObject);
+            const testObject = {
+                type: "ADDED",
+                object: {
+                    metadata: {
+                        creationTimestamp: "3000-07-16T18:44:46Z",
+                    },
+                },
+            };
+
+            const stop = kubernetes.watch(kubeResource, "test-namespace", cb);
+            this.stream.push(JSON.stringify(testObject));
             await stop();
             sinon.assert.called(cb);
         });
@@ -74,15 +77,18 @@ describe("plugins / kubernetes", () => {
                 version: "v1",
                 group: "events.k8s.io",
             };
-            const testObject =
-                '{"type": "ADDED", "object": {"metadata": {"creationTimestamp": "3000-07-16T18:44:46Z"}}}';
 
-            const stop = kubernetes.startWatch(
-                kubeResource,
-                "test-namespace",
-                cb
-            );
-            this.stream.push(testObject);
+            const testObject = {
+                type: "ADDED",
+                object: {
+                    metadata: {
+                        creationTimestamp: "3000-07-16T18:44:46Z",
+                    },
+                },
+            };
+
+            const stop = kubernetes.watch(kubeResource, "test-namespace", cb);
+            this.stream.push(JSON.stringify(testObject));
             await stop();
             sinon.assert.called(cb);
         });
@@ -93,15 +99,17 @@ describe("plugins / kubernetes", () => {
                 version: "",
                 group: "",
             };
-            const testObject =
-                '{"type": "ADDED", "object": {"metadata": {"creationTimestamp": "1991-07-16T18:44:46Z"}}}';
+            const testObject = {
+                type: "ADDED",
+                object: {
+                    metadata: {
+                        creationTimestamp: "1991-07-16T18:44:46Z",
+                    },
+                },
+            };
 
-            const stop = kubernetes.startWatch(
-                kubeResource,
-                "test-namespace",
-                cb
-            );
-            this.stream.push(testObject);
+            const stop = kubernetes.watch(kubeResource, "test-namespace", cb);
+            this.stream.push(JSON.stringify(testObject));
             await stop();
             sinon.assert.notCalled(cb);
         });
