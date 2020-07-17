@@ -44,14 +44,10 @@ const kubernetes = {
                     } catch (e) {
                         console.log(e);
                     }
-
-                    //const jsonStream = new JSONStream();
-                    //stream.pipe(jsonStream);
                     let reader = aw.createReader(stream);
 
                     let object;
                     while (null !== (object = await reader.readAsync())) {
-                        console.log(run);
                         callback(object.type, object.object);
                     }
                 } catch (e) {
