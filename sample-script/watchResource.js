@@ -52,7 +52,7 @@ module.exports = function (controller) {
         );
     });
 
-    controller.hears([/^stop watch$/], "direct_mention", async (bot, message) => {
+    controller.hears([/^stop$/], "direct_mention", async (bot, message) => {
         console.log("Script kubernetes.js: Stopping watch");
 
         if (stop === undefined) {
