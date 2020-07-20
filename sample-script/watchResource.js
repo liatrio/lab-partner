@@ -1,90 +1,127 @@
-const { BotkitConversation } = require("botkit");
-
 module.exports = function (controller) {
     let stop;
 
-    controller.plugins.help.addCommand("watch <resources>", "", "Watch a specific Kubernetes resource");
-    controller.plugins.help.addCommand("kill watch", "", "Kill existing watch on Kubernetes resource");
+    controller.plugins.help.addCommand(
+        "watch <resources>",
+        "",
+        "Watch a specific Kubernetes resource"
+    );
+    controller.plugins.help.addCommand(
+        "kill watch",
+        "",
+        "Kill existing watch on Kubernetes resource"
+    );
 
-    controller.hears(new RegExp(/((watch)$)|((watch) [a-zA-Z]*$)/), "direct_mention", async (bot, message) => {
-        var trimmedMessage = message.text.replace("watch ", "");
-        if (stop != undefined) {
-            console.log("Watch has already been started!");
+    controller.hears(
+        new RegExp(/((watch) [a-zA-Z]*$)/),
+        "direct_mention",
+        async (bot, message) => {
+            var trimmedMessage = message.text.replace("watch ", "");
+            if (stop != undefined) {
+                console.log("Watch has already been started!");
 
-            await bot.reply(message, {
-                blocks: [
-                    {
-                        type: "section",
-                        text: {
-                            type: "mrkdwn",
-                            text: "Uh oh! You already have started a watch!",
+                await bot.reply(message, {
+                    blocks: [
+                        {
+                            type: "section",
+                            text: {
+                                type: "mrkdwn",
+                                text:
+                                    "Uh oh! You already have started a watch!",
+                            },
                         },
-                    },
-                ],
-            });
-            return;
-        }
-
-        await bot.reply(message, {
-            blocks: [
-                {
-                    type: "section",
-                    text: {
-                        type: "mrkdwn",
-                        text: `Kubernetes watch running on ${trimmedMessage}!`,
-                    },
-                },
-            ],
-        });
-
-        const kubeResource = {
-            type: trimmedMessage,
-            resource: "",
-            group: "",
-        };
-        stop = controller.plugins.kubernetes.watch(
-            kubeResource,
-            "default",
-            (type, object) => {
-                let text = `New Resource ${object.metadata.name} was ${type}`;
-                bot.api.chat.postMessage({
-                    text: text,
-                    channel: message.channel
+                    ],
                 });
+                return;
             }
-        );
-    });
 
-    controller.hears([/^stop$/], "direct_mention", async (bot, message) => {
-        console.log("Script kubernetes.js: Stopping watch");
+            if (
+                !controller.plugins.kubernetes
+                    .getK8s()
+                    .api.v1.children.includes(trimmedMessage)
+            ) {
+                console.log("That is not a valid resource type!");
 
-        if (stop === undefined) {
-            console.log("No watch has been started!");
+                await bot.reply(message, {
+                    blocks: [
+                        {
+                            type: "section",
+                            text: {
+                                type: "mrkdwn",
+                                text:
+                                    "Uh oh! That is not a valid resource type! Try another(ex: pods)",
+                            },
+                        },
+                    ],
+                });
+                return;
+            }
+
             await bot.reply(message, {
                 blocks: [
                     {
                         type: "section",
                         text: {
                             type: "mrkdwn",
-                            text: "Can't stop what I haven't started!",
+                            text: `Kubernetes watch running on ${trimmedMessage}!`,
                         },
                     },
                 ],
             });
-        } else {
-            stop();
-            await bot.reply(message, {
-                blocks: [
-                    {
-                        type: "section",
-                        text: {
-                            type: "mrkdwn",
-                            text: "Watch is being stopped...",
-                        },
-                    },
-                ],
-            });
-            stop = undefined;
+
+            const kubeResource = {
+                type: trimmedMessage,
+                resource: "",
+                group: "",
+            };
+            stop = controller.plugins.kubernetes.watch(
+                kubeResource,
+                "default",
+                (type, object) => {
+                    let text = `New Resource ${object.metadata.name} was ${type}`;
+                    bot.api.chat.postMessage({
+                        text: text,
+                        channel: message.channel,
+                    });
+                }
+            );
         }
-    });
-}
+    );
+
+    controller.hears(
+        [/^stop watch/],
+        "direct_mention",
+        async (bot, message) => {
+            console.log("Script kubernetes.js: Stopping watch");
+
+            if (stop === undefined) {
+                console.log("No watch has been started!");
+                await bot.reply(message, {
+                    blocks: [
+                        {
+                            type: "section",
+                            text: {
+                                type: "mrkdwn",
+                                text: "Can't stop what I haven't started!",
+                            },
+                        },
+                    ],
+                });
+            } else {
+                stop();
+                await bot.reply(message, {
+                    blocks: [
+                        {
+                            type: "section",
+                            text: {
+                                type: "mrkdwn",
+                                text: "Watch is being stopped...",
+                            },
+                        },
+                    ],
+                });
+                stop = undefined;
+            }
+        }
+    );
+};
