@@ -4,10 +4,14 @@ const chance = require("chance").Chance();
 const { Transform } = require("stream");
 const JSONStream = require("json-stream");
 
+const MockKubernetesClient = require("../../mocks/kubernetes");
 const Watch = require("../../../lib/k8s/watch");
 
 describe("lib / watch", () => {
-    beforeEach(() => {});
+    let k8sClient;
+    beforeEach(() => {
+        k8sClient = new MockKubernetesClient();
+    });
 
     describe("constructor", () => {
         it("initializes new watch instance", () => {
@@ -15,7 +19,6 @@ describe("lib / watch", () => {
             const resource = {};
             const namespace = chance.word();
             const query = {};
-            const k8sClient = {};
 
             const watch = new Watch(
                 callback,
@@ -34,32 +37,23 @@ describe("lib / watch", () => {
     });
 
     describe("watch instance", () => {
+        let namespace;
+        let query;
+        let stream;
+        let jsonStream;
+
         beforeEach(() => {
-            this.namespace = chance.word();
-            this.query = {};
-            this.stream = new Transform({ read() {} });
-            this.jsonStream = new JSONStream();
-            this.stream.pipe(this.jsonStream);
-            this.resourceApi = {
-                getObjectStream: sinon.stub().resolves(this.jsonStream),
-            };
-            this.resourceGroupApi = {
-                watch: {
-                    namespaces: sinon.stub(),
-                },
-            };
-            this.k8sClient = {
-                api: {
-                    v1: this.resourceGroupApi,
-                },
-                apis: {},
-            };
+            namespace = chance.word();
+            query = {};
+            stream = new Transform({ read() {} });
+            jsonStream = new JSONStream();
+            stream.pipe(jsonStream);
         });
 
         it("detects new resource (no api group)", async () => {
             const callback = sinon.spy();
             const resource = {
-                type: chance.word,
+                type: chance.word(),
             };
 
             const testObject = {
@@ -71,22 +65,21 @@ describe("lib / watch", () => {
                 },
             };
 
-            const resourceApi = {};
-            resourceApi[resource.type] = this.resourceApi;
-            this.k8sClient.api.v1.watch.namespaces
-                .withArgs(this.namespace)
-                .returns(resourceApi);
+            k8sClient.addResource(resource.type);
+            k8sClient.api.v1.watch
+                .namespaces()
+                [resource.type].getObjectStream.resolves(jsonStream);
 
             const watch = new Watch(
                 callback,
                 resource,
-                this.namespace,
-                this.query,
-                this.k8sClient
+                namespace,
+                query,
+                k8sClient
             );
 
             await watch.start();
-            this.stream.push(JSON.stringify(testObject));
+            stream.push(JSON.stringify(testObject));
             await watch.stop();
             sinon.assert.called(callback);
         });
@@ -109,28 +102,25 @@ describe("lib / watch", () => {
                 },
             };
 
-            this.k8sClient.apis[resource.group] = {};
-            this.k8sClient.apis[resource.group][
+            k8sClient.addResource(
+                resource.type,
+                resource.group,
                 resource.version
-            ] = this.resourceGroupApi;
-            const resourceApi = {};
-            resourceApi[resource.type] = this.resourceApi;
-            this.k8sClient.apis[resource.group][
-                resource.version
-            ].watch.namespaces
-                .withArgs(this.namespace)
-                .returns(resourceApi);
+            );
+            k8sClient.apis[resource.group][resource.version].watch
+                .namespaces()
+                [resource.type].getObjectStream.resolves(jsonStream);
 
             const watch = new Watch(
                 callback,
                 resource,
-                this.namespace,
-                this.query,
-                this.k8sClient
+                namespace,
+                query,
+                k8sClient
             );
 
             await watch.start();
-            this.stream.push(JSON.stringify(testObject));
+            stream.push(JSON.stringify(testObject));
             await watch.stop();
             sinon.assert.called(callback);
         });
@@ -151,22 +141,21 @@ describe("lib / watch", () => {
                 },
             };
 
-            const resourceApi = {};
-            resourceApi[resource.type] = this.resourceApi;
-            this.k8sClient.api.v1.watch.namespaces
-                .withArgs(this.namespace)
-                .returns(resourceApi);
+            k8sClient.addResource(resource.type);
+            k8sClient.api.v1.watch
+                .namespaces()
+                [resource.type].getObjectStream.resolves(jsonStream);
 
             const watch = new Watch(
                 callback,
                 resource,
-                this.namespace,
-                this.query,
-                this.k8sClient
+                namespace,
+                query,
+                k8sClient
             );
 
             await watch.start();
-            this.stream.push(JSON.stringify(testObject));
+            stream.push(JSON.stringify(testObject));
             await watch.stop();
             sinon.assert.notCalled(callback);
         });

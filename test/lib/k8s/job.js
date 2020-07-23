@@ -11,10 +11,9 @@ describe("lib / job", () => {
     let k8sClient;
 
     beforeEach(() => {
-        k8sClient = new MockKubernetesClient([
-            { name: "pods" },
-            { name: "jobs", group: "batch", version: "v1" },
-        ]);
+        k8sClient = new MockKubernetesClient();
+        k8sClient.addResource("pods");
+        k8sClient.addResource("jobs", "batch", "v1");
     });
 
     describe("constructor", () => {

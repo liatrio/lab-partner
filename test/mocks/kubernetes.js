@@ -2,14 +2,11 @@ const { Transform } = require("stream");
 const sinon = require("sinon");
 
 class KubernetesClient {
-    constructor(resources) {
+    constructor() {
         this.api = {
             v1: this.createGroup(),
         };
         this.apis = {};
-        resources.forEach((resource) => {
-            this.addResource(resource.name, resource.group, resource.version);
-        });
     }
 
     addResource(name, group = null, version = "v1") {
@@ -69,122 +66,7 @@ class KubernetesClient {
         resource.log.get.resolves({ statusCode: 400, body: {} });
         resource.status.get.resolves({ statusCode: 400, body: {} });
         return resource;
-
-        // return {
-        //     getStream() {
-        //         const stream = new Transform({ read() {} });
-        //         return Promise.resolve(stream);
-        //     },
-        //     getObjectStream() {
-        //         const stream = new Readable({ read() {} });
-        //         return Promise.resolve(stream);
-        //     },
-        //     get() {
-        //         return Promise.resolve({});
-        //     },
-        //     patch() {
-        //         return Promise.resolve({});
-        //     },
-        // }
     }
 }
 
-// module.exports = {
-//     addGroup: (client, group) => {
-//         const names = ["event"];
-//         const namesPlural = ["event"];
-//         const apiResources = {};
-//         const apiWatchResources = {};
-//         names.forEach((name) => {
-//             apiResources[name] = {
-//                 getStream() {
-//                     const stream = new Readable({ read() {} });
-//                     return Promise.resolve(stream);
-//                 },
-//                 getObjectStream() {
-//                     const stream = new Readable({ read() {} });
-//                     return Promise.resolve(stream);
-//                 },
-//                 get() {
-//                     return Promise.resolve({});
-//                 },
-//                 patch() {
-//                     return Promise.resolve({});
-//                 },
-//             };
-//             apiWatchResources[name] = {
-//                 getStream() {
-//                     const stream = new Readable({ read() {} });
-//                     return Promise.resolve(stream);
-//                 },
-//                 getObjectStream() {
-//                     const stream = new Readable({ read() {} });
-//                     return Promise.resolve(stream);
-//                 },
-//                 get() {
-//                     return Promise.resolve({});
-//                 },
-//                 patch() {
-//                     return Promise.resolve({});
-//                 },
-//             };
-//         });
-//         namesPlural.forEach((name) => {
-//             apiResources[name] = () => ({
-//                 getStream() {
-//                     const stream = new Readable({ read() {} });
-//                     return Promise.resolve(stream);
-//                 },
-//                 getObjectStream() {
-//                     const stream = new Readable({ read() {} });
-//                     return Promise.resolve(stream);
-//                 },
-//                 get() {
-//                     return Promise.resolve({});
-//                 },
-//                 patch() {
-//                     return Promise.resolve({});
-//                 },
-//             });
-//             apiWatchResources[name] = {
-//                 getStream: sinon.stub().resolves(Readable({ read() {} })),
-//                 getObjectStream() {
-//                     const stream = new Readable({ read() {} });
-//                     return Promise.resolve(stream);
-//                 },
-//                 get() {
-//                     return Promise.resolve({});
-//                 },
-//                 patch() {
-//                     return Promise.resolve({});
-//                 },
-//             };
-//         });
-//         client.api = {
-//             v1: {
-//                 namespaces() {
-//                     return apiResources;
-//                 },
-//                 watch: {
-//                     namespaces() {
-//                         return apiWatchResources;
-//                     },
-//                 },
-//             },
-//         };
-//         client.apis = {};
-//         client.apis[group] = {
-//             v1: {
-//                 namespaces() {
-//                     return apiResources;
-//                 },
-//                 watch: {
-//                     namespaces() {
-//                         return apiWatchResources;
-//                     },
-//                 },
-//             },
-//         };
-//     },
-// };
 module.exports = KubernetesClient;
