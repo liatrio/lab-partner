@@ -225,9 +225,13 @@ describe("lib / job", () => {
                 },
             };
             const expectResponse = [{ name: chance.word() }];
+            k8sClient.api.v1.namespaces().pods.get.resolves({
+                statusCode: 200,
+                body: { items: [{ metadata: { name: chance.word() } }] },
+            });
             k8sClient.api.v1.namespaces().pods.log.get.resolves({
                 statusCode: 200,
-                body: { items: expectResponse },
+                body: expectResponse,
             });
 
             const job = new Job(name, resource, k8sClient);
@@ -237,7 +241,7 @@ describe("lib / job", () => {
                 k8sClient.api.v1.namespace,
                 resource.metadata.namespace
             );
-            expect(response).to.equal(expectResponse);
+            expect(response).to.deep.equal([expectResponse]);
         });
 
         it("throws exception on error response", async () => {

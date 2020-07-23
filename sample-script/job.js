@@ -14,7 +14,7 @@ module.exports = async (controller) => {
               {
                 name: "job",
                 image: "node",
-                command: ["node", "-e", "setTimeout(() => { console.log('{result: \"success\", logs: \"hello\"}') }, 3000)"],
+                command: ["node", "-e", "setTimeout(() => { console.log('Lab Partner is awesome!!!') }, 3000)"],
               }
             ]                
           }
@@ -37,7 +37,10 @@ module.exports = async (controller) => {
               if (lastPhase !== resource.status.phase) {
                 await bot.say(`Pod ${resource.metadata.name} is ${resource.status.phase}`);
                 if (resource.status.phase === "Succeeded") {
-                  const result = await job.destroy();
+                  const logs = await job.getLogs();
+                  await bot.say(`Logs \`\`\`${logs}\`\`\``);
+                  // console.log(logs);
+                  await job.destroy();
                 }
                 lastPhase = resource.status.phase;                
               }

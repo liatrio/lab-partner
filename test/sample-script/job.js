@@ -27,6 +27,7 @@ describe("sample-script / job", () => {
                 start: sinon
                     .stub()
                     .returns({ metadata: { name: chance.word() } }),
+                getLogs: sinon.stub().resolves({}),
                 destroy: sinon.spy(),
             };
             controller.plugins.kubernetes.newJob = sinon.stub();
@@ -63,6 +64,7 @@ describe("sample-script / job", () => {
             sinon.assert.called(controller.plugins.kubernetes.newJob);
             sinon.assert.called(controller.plugins.kubernetes.newWatch);
             sinon.assert.called(job.start);
+            sinon.assert.called(job.getLogs);
             sinon.assert.called(job.destroy);
             sinon.assert.called(watch.start);
             sinon.assert.called(watch.stop);
