@@ -10,6 +10,7 @@ RUN yarn
 COPY .eslintrc.json ./
 COPY test ./test
 COPY *.js ./
+COPY lib ./lib
 COPY features ./features
 COPY plugins ./plugins
 COPY sample-script ./sample-script
@@ -24,6 +25,7 @@ COPY yarn.lock ./
 RUN yarn --prod
 
 COPY *.js ./
+COPY lib ./lib
 COPY features ./features
 COPY plugins ./plugins
 COPY sample-script ./sample-script

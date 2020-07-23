@@ -5,9 +5,9 @@
   "main": "bot.js",
   "scripts": {
     "start": "node bot.js",
-    "test": "nyc mocha test/**",
-    "lint": "eslint '*.js' 'features/**' 'plugins/**' 'test/**'",
-    "lint-fix": "eslint '*.js' 'features/**' 'plugins/**' 'test/**' --fix"
+    "test": "nyc --all --include '*/**' mocha test/* --recursive",
+    "lint": "eslint '*.js' 'lib/**' 'features/**' 'plugins/**' 'test/**'",
+    "lint-fix": "eslint '*.js' 'lib/**' 'features/**' 'plugins/**' 'test/**' --fix"
   },
   "dependencies": {
     "@octokit/rest": "^18.0.0",
@@ -16,6 +16,8 @@
     "botbuilder-storage-mongodb": "^0.9.5",
     "botkit": "^4.6.2",
     "botkit-plugin-cms": "^1.0.3",
+    "chai-as-promised": "^7.1.1",
+    "deepmerge": "^4.2.2",
     "dotenv": "^7.0.0",
     "json-stream": "^1.0.0",
     "kubernetes-client": "^9.0.0",

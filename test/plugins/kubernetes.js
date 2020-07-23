@@ -1,11 +1,11 @@
 const sinon = require("sinon");
-const { Readable } = require("stream");
-const JSONStream = require("json-stream");
+const chance = require("chance").Chance();
+const { expect } = require("chai");
 const MockController = require("../mocks/controller");
-const K8sHelper = require("../mocks/kubernetes");
-const { Client } = require("kubernetes-client");
 
 const kubernetes = require("../../plugins/kubernetes");
+const Job = require("../../lib/k8s/job");
+const Watch = require("../../lib/k8s/watch");
 
 describe("plugins / kubernetes", () => {
     let controller;
@@ -18,22 +18,9 @@ describe("plugins / kubernetes", () => {
         });
     });
 
-    describe("Methods", () => {
+    describe("plugin init", () => {
         beforeEach(() => {
             controller = new MockController({});
-            this.stream = new Readable({ read() {} });
-            this.client = new Client({ backend: {}, version: "1.13" });
-            K8sHelper.addGroup(this.client, "events.k8s.io");
-
-            this.callback = sinon.spy();
-            const jsonStream = new JSONStream();
-            this.stream.pipe(jsonStream);
-            this.getObjectStream = sinon.stub(
-                this.client.api.v1.watch.namespaces().event,
-                "getObjectStream"
-            );
-            this.getObjectStream.resolves(jsonStream);
-            kubernetes.getK8s = sinon.stub().returns(this.client);
         });
 
         describe("init", () => {
@@ -47,71 +34,27 @@ describe("plugins / kubernetes", () => {
                 );
             });
         });
+    });
 
-        it("watching: detect new events", async () => {
-            const cb = sinon.spy();
-            const kubeResource = {
-                type: "event",
-                resource: "",
-                group: "",
-            };
+    describe("new job", () => {
+        it("returns job instance", () => {
+            const name = chance.word();
+            const resource = {};
 
-            const testObject = {
-                type: "ADDED",
-                object: {
-                    metadata: {
-                        creationTimestamp: "3000-07-16T18:44:46Z",
-                    },
-                },
-            };
+            const job = kubernetes.newJob(name, resource);
 
-            const stop = kubernetes.watch(kubeResource, "test-namespace", cb);
-            this.stream.push(JSON.stringify(testObject));
-            await stop();
-            sinon.assert.called(cb);
+            expect(job).is.a.instanceof(Job);
         });
-        it("watching: handle specified resources", async () => {
-            const cb = sinon.spy();
-            const kubeResource = {
-                type: "event",
-                version: "v1",
-                group: "events.k8s.io",
-            };
+    });
 
-            const testObject = {
-                type: "ADDED",
-                object: {
-                    metadata: {
-                        creationTimestamp: "3000-07-16T18:44:46Z",
-                    },
-                },
-            };
+    describe("new watch", () => {
+        it("returns watch instance", () => {
+            const name = chance.word();
+            const resource = {};
 
-            const stop = kubernetes.watch(kubeResource, "test-namespace", cb);
-            this.stream.push(JSON.stringify(testObject));
-            await stop();
-            sinon.assert.called(cb);
-        });
-        it("watching: filter old resources", async () => {
-            const cb = sinon.spy();
-            const kubeResource = {
-                type: "event",
-                version: "",
-                group: "",
-            };
-            const testObject = {
-                type: "ADDED",
-                object: {
-                    metadata: {
-                        creationTimestamp: "1991-07-16T18:44:46Z",
-                    },
-                },
-            };
+            const job = kubernetes.newWatch(name, resource);
 
-            const stop = kubernetes.watch(kubeResource, "test-namespace", cb);
-            this.stream.push(JSON.stringify(testObject));
-            await stop();
-            sinon.assert.notCalled(cb);
+            expect(job).is.a.instanceof(Watch);
         });
     });
 });
