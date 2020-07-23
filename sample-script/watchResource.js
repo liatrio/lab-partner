@@ -1,14 +1,16 @@
-module.exports = function (controller) {
-    let stop;
+module.exports = async function (controller) {
+    let watch;
+
+    const botUser = await controller.plugins.slack.whoAmI();
 
     controller.plugins.help.addCommand(
-        "watch <resources>",
-        "",
+        `@${botUser.real_name} watch <resources>`,
+        ":eyes: Start Watch",
         "Watch a specific Kubernetes resource"
     );
     controller.plugins.help.addCommand(
-        "kill watch",
-        "",
+        `@${botUser.real_name} stop watch`,
+        ":eyes: Stop Watch",
         "Kill existing watch on Kubernetes resource"
     );
 
@@ -17,7 +19,7 @@ module.exports = function (controller) {
         "direct_mention",
         async (bot, message) => {
             var trimmedMessage = message.text.replace("watch ", "");
-            if (stop != undefined) {
+            if (watch != undefined) {
                 console.log("Watch has already been started!");
 
                 await bot.reply(message, {
@@ -74,27 +76,28 @@ module.exports = function (controller) {
                 resource: "",
                 group: "",
             };
-            stop = controller.plugins.kubernetes.watch(
-                kubeResource,
-                "default",
+            watch = controller.plugins.kubernetes.newWatch(
                 (type, object) => {
                     let text = `New Resource ${object.metadata.name} was ${type}`;
                     bot.api.chat.postMessage({
                         text: text,
                         channel: message.channel,
                     });
-                }
+                },
+                kubeResource,
+                "default",
             );
+            await watch.start();
         }
     );
 
     controller.hears(
-        [/^stop watch/],
+        [/stop watch$/],
         "direct_mention",
         async (bot, message) => {
             console.log("Script kubernetes.js: Stopping watch");
 
-            if (stop === undefined) {
+            if (watch === undefined) {
                 console.log("No watch has been started!");
                 await bot.reply(message, {
                     blocks: [
@@ -108,7 +111,7 @@ module.exports = function (controller) {
                     ],
                 });
             } else {
-                stop();
+                await watch.stop();
                 await bot.reply(message, {
                     blocks: [
                         {
@@ -120,7 +123,7 @@ module.exports = function (controller) {
                         },
                     ],
                 });
-                stop = undefined;
+                watch = undefined;
             }
         }
     );
