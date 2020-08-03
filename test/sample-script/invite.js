@@ -10,6 +10,9 @@ describe("sample script / invite", () => {
 
     beforeEach(async () => {
         controller = new MockController({});
+        controller.plugins.slack.whoAmI = sinon
+            .stub()
+            .resolves({ real_name: chance.word() });
         await inviteFeature(controller);
     });
 

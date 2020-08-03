@@ -8,11 +8,12 @@ const PROGRESS_GAUGE_STEPS = {
   5: "Finished",
 }
 
-module.exports = (controller) => {
+module.exports = async (controller) => {
+  const botUser = await controller.plugins.slack.whoAmI();
 
-  controller.plugins.help.addCommand("progress", ":arrow_forward: Progress", "Show participant's current progress");
-  controller.plugins.help.addCommand("progress next", ":fast_forward: Progress Next", "Advance participant to next step");
-  controller.plugins.help.addCommand("progress back", ":rewind: Progress Back", "Move participant to previous step");
+  controller.plugins.help.addCommand(`@${botUser.real_name} progress`, ":stopwatch: Progress", "Show participant's current progress");
+  controller.plugins.help.addCommand(`@${botUser.real_name} progress next`, ":stopwatch: Progress Next", "Advance participant to next step");
+  controller.plugins.help.addCommand(`@${botUser.real_name} progress back`, ":stopwatch: Progress Back", "Move participant to previous step");
 
   getProgress = async (user) => {
     let progress = await controller.plugins.storage.getUserGaugeForUser(user, PROGRESS_GAUGE);

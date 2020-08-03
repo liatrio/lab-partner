@@ -15,12 +15,15 @@ const createGauge = () => {
     };
 };
 
-describe("sample script / invite", () => {
+describe("sample script / progress", () => {
     let controller;
 
     beforeEach(async () => {
         controller = new MockController({});
         controller.plugins.help.addCommand = sinon.spy();
+        controller.plugins.slack.whoAmI = sinon
+            .stub()
+            .resolves({ real_name: chance.word() });
         await progressFeature(controller);
     });
 

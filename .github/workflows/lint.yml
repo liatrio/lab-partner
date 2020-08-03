@@ -1,4 +1,4 @@
-name: test
+name: lint
 
 on:
   push:
@@ -7,7 +7,7 @@ env:
   NODE_VERSION: '12.16.3'
 
 jobs:
-  test:
+  lint:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -18,10 +18,7 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
 
-      - name: Run Tests
+      - name: Run Linter
         run: |
           yarn
-          yarn test
-
-      - name: Run Linter
-        run: yarn run lint
+          yarn run lint
