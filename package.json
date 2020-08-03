@@ -5,7 +5,7 @@
   "main": "bot.js",
   "scripts": {
     "start": "node bot.js",
-    "test": "nyc --all --include '*/**' mocha test/* --recursive",
+    "test": "nyc --all --include '*/**' mocha test/* --recursive --require test/setup.js",
     "lint": "eslint '*.js' 'lib/**' 'features/**' 'plugins/**' 'test/**'",
     "lint-fix": "eslint '*.js' 'lib/**' 'features/**' 'plugins/**' 'test/**' --fix"
   },
@@ -16,7 +16,6 @@
     "botbuilder-storage-mongodb": "^0.9.5",
     "botkit": "^4.6.2",
     "botkit-plugin-cms": "^1.0.3",
-    "chai-as-promised": "^7.1.1",
     "deepmerge": "^4.2.2",
     "dotenv": "^7.0.0",
     "json-stream": "^1.0.0",
@@ -32,6 +31,7 @@
     "eslint-plugin-prettier": "^3.1.4",
     "mocha": "^8.0.1",
     "mocha-eslint": "^6.0.0",
+    "chai-as-promised": "^7.1.1",
     "nyc": "^15.1.0",
     "prettier": "2.0.5",
     "sinon": "^9.0.2"
