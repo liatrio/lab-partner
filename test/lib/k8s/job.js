@@ -1,5 +1,4 @@
-const chai = require("chai");
-const expect = chai.expect;
+const { expect } = require("chai");
 const chance = require("chance").Chance();
 const sinon = require("sinon");
 const MockKubernetesClient = require("../../mocks/kubernetes");
