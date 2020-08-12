@@ -27,6 +27,7 @@ class MockController {
             help: {},
             participants: {},
             storage: {},
+            kubernetes: {},
         };
     }
 
@@ -35,6 +36,9 @@ class MockController {
     }
 
     hears(pattern, type, cb) {
+        if (!Array.isArray(pattern)) {
+            pattern = [pattern];
+        }
         this.behavior.push({
             pattern,
             type,

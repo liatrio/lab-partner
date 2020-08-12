@@ -1,0 +1,18 @@
+{{- if .Values.serviceAccount.create -}}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ .Values.serviceAccount.name }}-role
+  labels:
+    app.kubernetes.io/name: {{ .Values.serviceAccount.name }}-role
+    app.kubernetes.io/component: lab-partner 
+    app.kubernetes.io/instance: {{ $.Release.Name }}
+    app.kubernetes.io/managed-by: helm
+  annotations:
+    description: Role granting permissions for lab-partner
+    source-repo: https://github.com/liatrio/lab-partner
+rules:
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "watch", "list"]
+{{- end -}}
