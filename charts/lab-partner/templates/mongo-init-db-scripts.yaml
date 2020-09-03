@@ -5,19 +5,27 @@ metadata:
 data:
   lab-partner.js: |
     use lab-partner;
-    db.createUser(
-      {
-        user: "{{ .Values.mongodb.auth.custom_user.username }}",
-        pwd: "{{ .Values.mongodb.auth.custom_user.password }}",
-        roles: [
-          {
-            role: "readWrite",
-            db: "BotFramework"
-          },
-          {
-            role: "readWrite",
-            db: "lab-partner"
-          }
-        ]
+    try {
+      db.createUser(
+        {
+          user: "{{ .Values.mongodb.auth.custom_user.username }}",
+          pwd: "{{ .Values.mongodb.auth.custom_user.password }}",
+          roles: [
+            {
+              role: "readWrite",
+              db: "BotFramework"
+            },
+            {
+              role: "readWrite",
+              db: "lab-partner"
+            }
+          ]
+        }
+      );
+    } catch (error) {
+      if (error.message.match(/User "{{ .Values.mongodb.auth.custom_user.username }}@lab-partner" already exists/)) {
+        print("User not created because already exists");
+      } else {
+        throw error;
       }
-    );
+    }
