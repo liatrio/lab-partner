@@ -1,0 +1,27 @@
+name: Runner Test
+
+on: push
+
+jobs:
+  runner-test:
+    name: Runner Test
+
+    runs-on: liatrio-runners-prod
+
+    steps:
+      # Checks out a copy of your repository on the ubuntu-latest machine
+      - name: Checkout code
+        uses: actions/checkout@v2
+      
+      - name: Node Setup
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Run Tests
+        run: |
+          yarn
+          yarn test
+
+      - name: Run Linter
+        run: yarn run lint
