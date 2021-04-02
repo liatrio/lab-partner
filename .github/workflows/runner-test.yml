@@ -2,13 +2,16 @@ name: Runner Test
 
 on: push
 
+env:
+  NODE_VERSION: '12.16.3'
+
 jobs:
   runner-test:
     name: Runner Test
 
     runs-on: 
     - self-hosted
-    - liatrio-runners-prod
+    - liatrio-runners-sand
 
     steps:
       # Checks out a copy of your repository on the ubuntu-latest machine
