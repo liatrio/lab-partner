@@ -6,7 +6,9 @@ jobs:
   runner-test:
     name: Runner Test
 
-    runs-on: liatrio-runners-prod
+    runs-on: 
+    - self-hosted
+    - liatrio-runners-prod
 
     steps:
       # Checks out a copy of your repository on the ubuntu-latest machine
