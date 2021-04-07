@@ -24,8 +24,13 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
 #
-#      - name: Install Yarn
-#        run: npm install --global yarn
+      - name: Install Helm
+        run: curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
+
+      - name: Add Stable Helm Repo
+        run : |
+          helm repo add stable https://charts.helm.sh/stable
+          helm repo update
       
       - name: Setup TF
         uses: hashicorp/setup-terraform@v1
