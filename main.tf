@@ -7,7 +7,7 @@ provider "helm" {
 
 resource "kubernetes_namespace" "rode" {
   metadata {
-    name = var.namespace
+    name = rode-runner-demo
   }
 }
 
