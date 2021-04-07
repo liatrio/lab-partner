@@ -40,7 +40,7 @@ jobs:
       - name: Check Install
         run: |
           terraform version
-          terragrunt --version
+          ./terragrunt --version
 
       - name: TF init
         run: terraform init
