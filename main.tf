@@ -19,6 +19,14 @@ resource "helm_release" "rode" {
   version    = "0.1.2"
   wait       = true
 
+  set_sensitive {
+    name = "grafeas-elasticsearch.grafeas.elasticsearch.username"
+    value = "test"
+  }
+  set_sensitive {
+    name = "grafeas-elasticsearch.grafeas.elasticsearch.password"
+    value = "test"
+  }
 }
 
 resource "null_resource" "example1" {
