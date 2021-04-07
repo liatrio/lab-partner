@@ -5,18 +5,21 @@ terraform {
 provider "helm" {
 }
 
-resource "helm_release" "nginx_ingress" {
-  name       = "nginx-ingress-controller"
-
-  repository = "https://charts.bitnami.com/bitnami"
-  chart      = "nginx-ingress-controller"
-
-  set {
-    name  = "service.type"
-    value = "ClusterIP"
+resource "kubernetes_namespace" "rode" {
+  metadata {
+    name = var.namespace
   }
 }
 
+resource "helm_release" "rode" {
+  name       = "rode"
+  namespace  = kubernetes_namespace.rode.metadata[0].name
+  chart      = "rode"
+  repository = "https://rode.github.io/charts"
+  version    = "0.1.2"
+  wait       = true
+
+}
 
 resource "null_resource" "example1" {
   provisioner "local-exec" {
