@@ -4,6 +4,7 @@ on: push
 
 env:
   NODE_VERSION: '12.16.3'
+  TERRAGRUNT_VERSION: '0.28.14'
 
 jobs:
   runner-test:
@@ -26,10 +27,38 @@ jobs:
       - name: Install Yarn
         run: npm install --global yarn
 
-      - name: Run Tests
+      - name: Setup TF
+        uses: hashicorp/setup-terraform@1
+        with:
+          terraform_version: 0.14.9
+
+      - name: Setup Terragrunt
         run: |
-          yarn
-          yarn test
+          curl -f -Lo terragrunt https://github.com/gruntwork-io/terragrunt/releases/download/v${{env.TERRAGRUNT_VERSION}}/terragrunt_linux_amd64 && \
+          chmod +x terragrunt && \
+          mv terragrunt /usr/bin
+
+      - name: Check Install
+        run: |
+          terraform version
+          terragrunt --version
+
+      - name: TF init
+        run: terraform init
+
+      - name: TF Plan
+        run: terraform plan -no-color
+
+      - name: Terragrunt Init
+        run: terragrunt init
+
+      - name: Terragrunt plan
+        run: terragrunt plan
+
+#      - name: Run Tests
+#        run: |
+#          yarn
+#          yarn test
 
       - name: Run Linter
         run: yarn run lint
