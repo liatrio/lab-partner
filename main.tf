@@ -1,5 +1,5 @@
 remote_state {
-  backend = "s3"
+  backend "s3" {}
 }
 
 provider "helm" {
@@ -21,10 +21,10 @@ resource "helm_release" "rode" {
 
   set_sensitive {
     name  = "grafeas-elasticsearch.grafeas.elasticsearch.username"
-    value = "test"
+    value = "testing"
   }
   set_sensitive {
     name  = "grafeas-elasticsearch.grafeas.elasticsearch.password"
-    value = "test"
+    value = "testing"
   }
 }
