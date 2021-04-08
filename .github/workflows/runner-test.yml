@@ -54,7 +54,7 @@ jobs:
 #        run: terraform plan -no-color
 
       - name: Terragrunt Init
-        run: ./terragrunt init -auto-approve
+        run: ./terragrunt init --terragrunt-non-interactive
 
       - name: Terragrunt plan
         run: ./terragrunt plan
