@@ -1,4 +1,4 @@
-remote_state {
+terraform {
   backend "s3" {}
 }
 
