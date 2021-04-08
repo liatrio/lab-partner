@@ -3,3 +3,5 @@ node_modules/
 .nyc_output
 .swp
 charts/lab-partner/charts/
+.terraform/
+.terragrunt-cache/
