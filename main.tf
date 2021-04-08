@@ -1,4 +1,4 @@
-remote_state  {
+remote_state {
   backend = "s3"
 }
 
@@ -20,17 +20,11 @@ resource "helm_release" "rode" {
   wait       = true
 
   set_sensitive {
-    name = "grafeas-elasticsearch.grafeas.elasticsearch.username"
+    name  = "grafeas-elasticsearch.grafeas.elasticsearch.username"
     value = "test"
   }
   set_sensitive {
-    name = "grafeas-elasticsearch.grafeas.elasticsearch.password"
+    name  = "grafeas-elasticsearch.grafeas.elasticsearch.password"
     value = "test"
-  }
-}
-
-resource "null_resource" "example1" {
-  provisioner "local-exec" {
-    command = "echo 'Hello World'"
   }
 }

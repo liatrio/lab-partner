@@ -14,4 +14,5 @@ remote_state {
       owner = "Terragrunt"
       name  = "Terraform Lock Table"
     }
+  }
 }
