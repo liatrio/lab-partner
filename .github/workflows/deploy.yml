@@ -19,6 +19,5 @@ jobs:
         url: https://github.com/liatrio/lead-environments.git
         username: ${{ github.actor }}
         password: ${{ secrets.GITTY_UP_TOKEN }}
-        file: aws/manifest.yml
-        values: liatrio_sandbox.lab_partner_version=${{steps.gitextra.outputs.version}}
-    
+        file: aws/liatrio-sandbox/manifest.yml
+        values: lab_partner_version=${{steps.gitextra.outputs.version}}
